@@ -1,0 +1,37 @@
+# Visual Studio
+.vs/
+.vscode/
+
+# Build
+bin/
+obj/
+
+# User files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+packages/
+
+# ASP.NET
+wwwroot/lib/
+
+# Logs
+*.log
+
+# Database
+*.mdf
+*.ldf
+*.bak
+
+# Environment / secrets
+appsettings.Development.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Visual Studio
+TestResults/
