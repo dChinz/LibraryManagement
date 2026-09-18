@@ -1,0 +1,145 @@
+﻿@model IEnumerable<Library.Models.Category>
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Quản lý danh mục</h1>
+            <p class="text-muted mb-0">Quản lý các danh mục sách trong thư viện</p>
+        </div>
+        <div>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i>
+                Thêm danh mục
+            </a>
+        </div>
+    </div>
+    <!-- Card -->
+    <div class="card">
+        <!-- Card Header -->
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Danh sách danh mục</h3>
+                <span class="badge text-bg-primary">@Model.Count() danh mục</span>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <!-- Search -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchCategory" class="form-control" placeholder="Tìm kiếm danh mục..." />
+                    </div>
+                </div>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle" id="categoryTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 70px;">#</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th style="width: 130px;">Số sách</th>
+                            <th style="width: 150px;">Ngày tạo</th>
+                            <th style="width: 150px;">Trạng thái</th>
+                            <th style="width: 170px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>
+                                        <strong>@item.Name</strong>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            @item.Description
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Chưa có mô tả</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-info">
+                                            @(item.Books?.Count ?? 0) sách
+                                        </span>
+                                    </td>
+                                    <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (item.DeletedAt == default(DateTime))
+                                        {
+                                            <span class="badge text-bg-success">
+                                                <i class="bi bi-check-circle"></i>
+                                                Đang hoạt động
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge text-bg-danger">
+                                                <i class="bi bi-x-circle"></i>
+                                                Đã xóa
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Xem">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <!-- Edit -->
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <!-- Delete -->
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-folder-x fs-1"></i>
+                                        <p class="mt-3 mb-0">Chưa có danh mục nào.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Card Footer -->
+        <div class="card-footer text-muted">
+            Tổng số: <strong>@Model.Count()</strong> danh mục
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.getElementById("searchCategory").addEventListener("keyup", function () {
+            const keyword = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#categoryTable tbody tr");
+            rows.forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(keyword) ? "" : "none";
+            });
+        });
+    </script>
+}

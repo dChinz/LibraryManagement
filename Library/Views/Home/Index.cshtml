@@ -1,0 +1,558 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+
+    var totalBooks = ViewBag.TotalBooks ?? 0;
+    var availableBooks = ViewBag.AvailableBooks ?? 0;
+    var totalMembers = ViewBag.TotalMembers ?? 0;
+    var borrowingCount = ViewBag.BorrowingCount ?? 0;
+    var overdueCount = ViewBag.OverdueCount ?? 0;
+    var categoryCount = ViewBag.CategoryCount ?? 0;
+    var monthlyBorrowCount = ViewBag.MonthlyBorrowCount ?? 0;
+
+    var availablePercent = ViewBag.AvailablePercent ?? 0;
+    var borrowingPercent = ViewBag.BorrowingPercent ?? 0;
+    var overduePercent = ViewBag.OverduePercent ?? 0;
+
+    var recentBorrows = ViewBag.RecentBorrows as IEnumerable<Library.Models.BorrowRecord>;
+}
+
+<div class="container-fluid">
+
+    <!-- ========================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Dashboard</h1>
+            <p class="text-muted mb-0">
+                Tổng quan hoạt động của thư viện
+            </p>
+        </div>
+
+        <div>
+            <span class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>
+                @DateTime.Now.ToString("dd/MM/yyyy")
+            </span>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- THỐNG KÊ -->
+    <!-- ========================= -->
+
+    <div class="row">
+
+        <!-- Tổng số sách -->
+        <div class="col-lg-3 col-md-6 col-12">
+            <div class="small-box text-bg-primary">
+
+                <div class="inner">
+                    <h3>@totalBooks.ToString("N0")</h3>
+
+                    <p>
+                        Tổng số sách
+                        <i class="bi bi-book ms-1"></i>
+                    </p>
+                </div>
+
+                <a asp-controller="Book"
+                   asp-action="Index"
+                   class="small-box-footer">
+
+                    Xem danh sách
+
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Độc giả -->
+        <div class="col-lg-3 col-md-6 col-12">
+            <div class="small-box text-bg-success">
+
+                <div class="inner">
+                    <h3>@totalMembers.ToString("N0")</h3>
+
+                    <p>
+                        Độc giả
+                        <i class="bi bi-people ms-1"></i>
+                    </p>
+                </div>
+
+                <a asp-controller="Member"
+                   asp-action="Index"
+                   class="small-box-footer">
+
+                    Xem danh sách
+
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Đang mượn -->
+        <div class="col-lg-3 col-md-6 col-12">
+            <div class="small-box text-bg-warning">
+
+                <div class="inner">
+                    <h3>@borrowingCount.ToString("N0")</h3>
+
+                    <p>
+                        Sách đang được mượn
+                        <i class="bi bi-journal-arrow-up ms-1"></i>
+                    </p>
+                </div>
+
+                <a asp-controller="BorrowRecord"
+                   asp-action="Index"
+                   class="small-box-footer">
+
+                    Xem chi tiết
+
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Quá hạn -->
+        <div class="col-lg-3 col-md-6 col-12">
+            <div class="small-box text-bg-danger">
+
+                <div class="inner">
+                    <h3>@overdueCount.ToString("N0")</h3>
+
+                    <p>
+                        Sách quá hạn
+                        <i class="bi bi-exclamation-triangle ms-1"></i>
+                    </p>
+                </div>
+
+                <a asp-controller="BorrowRecord"
+                   asp-action="Index"
+                   class="small-box-footer">
+
+                    Xem chi tiết
+
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- NỘI DUNG CHÍNH -->
+    <!-- ========================= -->
+
+    <div class="row">
+
+        <!-- ========================= -->
+        <!-- MƯỢN SÁCH GẦN ĐÂY -->
+        <!-- ========================= -->
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Mượn sách gần đây
+                        </h3>
+
+                        <a asp-controller="BorrowRecord"
+                           asp-action="Index"
+                           class="btn btn-sm btn-primary">
+
+                            Xem tất cả
+
+                            <i class="bi bi-arrow-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th style="width: 60px;">#</th>
+                                    <th>Độc giả</th>
+                                    <th>Sách</th>
+                                    <th>Ngày mượn</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @if (recentBorrows != null && recentBorrows.Any())
+                                {
+                                    var index = 1;
+
+                                    foreach (var item in recentBorrows)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @index
+                                            </td>
+
+                                            <!-- Độc giả -->
+                                            <td>
+
+                                                <div class="d-flex align-items-center">
+
+                                                    <div class="user-icon me-2">
+                                                        <i class="bi bi-person"></i>
+                                                    </div>
+
+                                                    <div>
+
+                                                        <div class="fw-semibold">
+                                                            @(item.Member?.FullName ?? "Không xác định")
+                                                        </div>
+
+                                                        @if (item.Member != null)
+                                                        {
+                                                            <small class="text-muted">
+                                                                @item.Member.MemberCode
+                                                            </small>
+                                                        }
+
+                                                    </div>
+
+                                                </div>
+
+                                            </td>
+
+                                            <!-- Sách -->
+                                            <td>
+
+                                                <div class="fw-semibold">
+                                                    @(item.Book?.Title ?? "Không xác định")
+                                                </div>
+
+                                                @if (item.Book != null)
+                                                {
+                                                    <small class="text-muted">
+                                                        ISBN: @item.Book.Isbn
+                                                    </small>
+                                                }
+
+                                            </td>
+
+                                            <!-- Ngày mượn -->
+                                            <td>
+                                                @item.BorrowDate.ToString("dd/MM/yyyy")
+                                            </td>
+
+                                            <!-- Trạng thái -->
+                                            <td>
+
+                                                @if (item.ReturnDate.HasValue)
+                                                {
+                                                    <span class="badge text-bg-secondary">
+                                                        <i class="bi bi-check-circle me-1"></i>
+                                                        Đã trả
+                                                    </span>
+                                                }
+                                                else if (item.DueDate < DateTime.Now)
+                                                {
+                                                    <span class="badge text-bg-danger">
+                                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                                        Quá hạn
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge text-bg-success">
+                                                        <i class="bi bi-book me-1"></i>
+                                                        Đang mượn
+                                                    </span>
+                                                }
+
+                                            </td>
+
+                                        </tr>
+
+                                        index++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+
+                                        <td colspan="5"
+                                            class="text-center py-5">
+
+                                            <div class="text-muted">
+
+                                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+
+                                                <div>
+                                                    Chưa có lượt mượn sách nào.
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- TỔNG QUAN -->
+        <!-- ========================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3 class="card-title mb-0">
+
+                        <i class="bi bi-bar-chart me-2"></i>
+
+                        Tổng quan
+
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Sách có sẵn -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <span>
+
+                            <i class="bi bi-check-circle text-success me-2"></i>
+
+                            Sách có sẵn
+
+                        </span>
+
+                        <strong>
+                            @availableBooks.ToString("N0")
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mb-4"
+                         style="height: 6px;">
+
+                        <div class="progress-bar bg-success"
+                             style="width: @availablePercent%;">
+                        </div>
+
+                    </div>
+
+
+                    <!-- Sách đang mượn -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <span>
+
+                            <i class="bi bi-book text-warning me-2"></i>
+
+                            Đang được mượn
+
+                        </span>
+
+                        <strong>
+                            @((totalBooks - availableBooks).ToString("N0"))
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mb-4"
+                         style="height: 6px;">
+
+                        <div class="progress-bar bg-warning"
+                             style="width: @borrowingPercent%;">
+                        </div>
+
+                    </div>
+
+
+                    <!-- Sách quá hạn -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <span>
+
+                            <i class="bi bi-exclamation-circle text-danger me-2"></i>
+
+                            Sách quá hạn
+
+                        </span>
+
+                        <strong>
+                            @overdueCount.ToString("N0")
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mb-4"
+                         style="height: 6px;">
+
+                        <div class="progress-bar bg-danger"
+                             style="width: @overduePercent%;">
+                        </div>
+
+                    </div>
+
+
+                    <hr />
+
+
+                    <!-- Thể loại -->
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span class="text-muted">
+
+                            <i class="bi bi-tags me-2"></i>
+
+                            Thể loại sách
+
+                        </span>
+
+                        <strong>
+                            @categoryCount.ToString("N0")
+                        </strong>
+
+                    </div>
+
+
+                    <!-- Tổng lượt mượn -->
+
+                    <div class="d-flex justify-content-between">
+
+                        <span class="text-muted">
+
+                            <i class="bi bi-arrow-repeat me-2"></i>
+
+                            Lượt mượn tháng này
+
+                        </span>
+
+                        <strong>
+                            @monthlyBorrowCount.ToString("N0")
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- THAO TÁC NHANH -->
+            <!-- ========================= -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3 class="card-title mb-0">
+
+                        <i class="bi bi-lightning me-2"></i>
+
+                        Thao tác nhanh
+
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="d-grid gap-2">
+
+                        <a asp-controller="Book"
+                           asp-action="Create"
+                           class="btn btn-primary">
+
+                            <i class="bi bi-plus-lg me-2"></i>
+
+                            Thêm sách
+
+                        </a>
+
+                        <a asp-controller="Member"
+                           asp-action="Create"
+                           class="btn btn-outline-success">
+
+                            <i class="bi bi-person-plus me-2"></i>
+
+                            Thêm độc giả
+
+                        </a>
+
+                        <a asp-controller="BorrowRecord"
+                           asp-action="Create"
+                           class="btn btn-outline-warning">
+
+                            <i class="bi bi-journal-plus me-2"></i>
+
+                            Tạo lượt mượn
+
+                        </a>
+
+                        <a asp-controller="Category"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+
+                            <i class="bi bi-tags me-2"></i>
+
+                            Quản lý thể loại
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

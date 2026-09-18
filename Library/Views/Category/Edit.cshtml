@@ -1,0 +1,78 @@
+﻿@model Library.Models.Category
+
+@{
+    ViewData["Title"] = "Chỉnh sửa thể loại";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="mb-1">Chỉnh sửa thể loại</h1>
+        <p class="text-muted mb-0">Cập nhật thông tin của thể loại sách</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="bi bi-pencil-square me-2"></i>
+                Thông tin thể loại
+            </h3>
+        </div>
+
+        <form asp-action="Edit" method="post">
+            <div class="card-body">
+
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedAt" />
+                <input type="hidden" asp-for="DeletedAt" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">
+                        Tên thể loại
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control"
+                           placeholder="Nhập tên thể loại" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">
+                        Mô tả
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="5"
+                              placeholder="Nhập mô tả cho thể loại"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger"></span>
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i>
+                    Lưu thay đổi
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary ms-2">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,157 @@
+@model Library.Models.Book
+@{
+    ViewData["Title"] = "Xóa sách";
+}
+<div class="container-fluid">
+    <!-- Tiêu đề -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Xóa sách</h1>
+            <p class="text-muted mb-0">Xác nhận xóa sách khỏi hệ thống</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Quay lại
+        </a>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <!-- Cảnh báo -->
+            <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>Cảnh báo!</strong>
+                    <div>Bạn có chắc chắn muốn xóa sách này khỏi hệ thống không?</div>
+                </div>
+            </div>
+            <!-- Thông tin sách -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-book me-2"></i>
+                        Thông tin sách
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Tên sách -->
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Tên sách
+                        </div>
+                        <h4 class="mb-0">
+                            @Model.Title
+                        </h4>
+                    </div>
+                    <hr />
+                    <!-- ISBN -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-upc-scan me-2"></i>
+                            ISBN
+                        </div>
+                        <div class="col-md-8 fw-semibold">
+                            @Model.Isbn
+                        </div>
+                    </div>
+                    <!-- Tác giả -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-person me-2"></i>
+                            Tác giả
+                        </div>
+                        <div class="col-md-8 fw-semibold">
+                            @Model.Author
+                        </div>
+                    </div>
+                    <!-- Nhà xuất bản -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-building me-2"></i>
+                            Nhà xuất bản
+                        </div>
+                        <div class="col-md-8">
+                            @(string.IsNullOrEmpty(Model.Publisher) ? "Chưa cập nhật" : Model.Publisher)
+                        </div>
+                    </div>
+                    <!-- Năm xuất bản -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-calendar3 me-2"></i>
+                            Năm xuất bản
+                        </div>
+                        <div class="col-md-8">
+                            @Model.PublishYear
+                        </div>
+                    </div>
+                    <!-- Thể loại -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-tags me-2"></i>
+                            Thể loại
+                        </div>
+                        <div class="col-md-8">
+                            @(Model.Category?.Name ?? "Chưa xác định")
+                        </div>
+                    </div>
+                    <!-- Tổng số lượng -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-box-seam me-2"></i>
+                            Tổng số lượng
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge bg-primary">
+                                @Model.TotalCopies sách
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Số lượng có sẵn -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-muted">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Có sẵn
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge bg-success">
+                                @Model.AvailableCopies sách
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Mô tả -->
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <hr />
+                        <div>
+                            <div class="text-muted mb-2">
+                                <i class="bi bi-card-text me-2"></i>
+                                Mô tả
+                            </div>
+                            <div class="p-3 rounded">
+                                @Model.Description
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!-- Footer -->
+                <div class="card-footer">
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Hủy
+                            </a>
+                            <button type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa sách @Model.Title không?');">
+                                <i class="bi bi-trash me-1"></i>
+                                Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+@model Library.Models.Member
+
+@{
+    ViewData["Title"] = "Chỉnh sửa độc giả";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Chỉnh sửa độc giả</h1>
+            <p class="text-muted mb-0">Cập nhật thông tin độc giả trong thư viện</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-person-gear me-2"></i>
+                        Thông tin độc giả
+                    </h3>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="MemberCode" class="form-label">
+                                Mã độc giả
+                            </label>
+                            <input asp-for="MemberCode" class="form-control" readonly />
+                            <span asp-validation-for="MemberCode" class="text-danger"></span>
+                            <div class="form-text">
+                                Mã độc giả không thể thay đổi.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="FullName" class="form-label">
+                                Họ tên <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FullName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label">
+                                Email
+                            </label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="Ví dụ: nguyenvana@gmail.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Phone" class="form-label">
+                                Số điện thoại
+                            </label>
+                            <input asp-for="Phone" class="form-control" placeholder="Ví dụ: 0987654321" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Address" class="form-label">
+                                Địa chỉ
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Nhập địa chỉ của độc giả"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Thông tin thẻ
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label asp-for="JoinDate" class="form-label">
+                            Ngày gia nhập
+                        </label>
+                        <input asp-for="JoinDate" type="date" class="form-control" />
+                        <span asp-validation-for="JoinDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ExpiryDate" class="form-label">
+                            Ngày hết hạn
+                        </label>
+                        <input asp-for="ExpiryDate" type="date" class="form-control" />
+                        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Status" class="form-label">
+                            Tình trạng
+                        </label>
+
+                        <select asp-for="Status" class="form-select">
+                            <option value="@Library.Models.MemberStatus.ACTIVE">Đang hoạt động</option>
+                            <option value="@Library.Models.MemberStatus.EXPIRED">Hết hạn</option>
+                            <option value="@Library.Models.MemberStatus.SUSPENDED">Tạm khóa</option>
+                        </select>
+
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="LostBookCount" class="form-label">
+                            Số sách đánh mất
+                        </label>
+                        <input asp-for="LostBookCount" type="number" min="0" class="form-control" />
+                        <span asp-validation-for="LostBookCount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin hệ thống
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="text-muted small mb-1">Ngày tạo</div>
+                        <strong>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small mb-1">Cập nhật lần cuối</div>
+                        <strong>@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

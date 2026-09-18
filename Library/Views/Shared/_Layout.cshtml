@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Library Management</title>
+    <adminlte-styles />
+
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+        <!-- ========================= -->
+        <!-- NAVBAR -->
+        <!-- ========================= -->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <div class="container-fluid">
+                <!-- Nút mở / đóng Sidebar -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           data-lte-toggle="sidebar"
+                           href="#"
+                           role="button">
+                            <i class="bi bi-list"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Navbar bên phải -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-bell"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    Thông tin cá nhân
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- ========================= -->
+        <!-- SIDEBAR -->
+        <!-- ========================= -->
+        <aside class="app-sidebar bg-body-secondary shadow"
+               data-bs-theme="dark">
+            <!-- Logo -->
+            <div class="sidebar-brand">
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="brand-link">
+                    <span class="brand-text fw-light">
+                        📚 Library Management
+                    </span>
+                </a>
+            </div>
+            <!-- Menu -->
+            <div class="sidebar-wrapper">
+                <nav class="mt-2">
+                    <ul class="nav sidebar-menu flex-column"
+                        data-lte-toggle="treeview"
+                        role="menu">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a asp-controller="Home"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-speedometer2"></i>
+                                <p>
+                                    Dashboard
+                                </p>
+                            </a>
+                        </li>
+                        <!-- BOOKS -->
+                        <li class="nav-item">
+                            <a asp-controller="Book"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-book"></i>
+                                <p>
+                                    Quản lý sách
+                                </p>
+                            </a>
+                        </li>
+                        <!-- MEMBERS -->
+                        <li class="nav-item">
+                            <a asp-controller="Member"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-people"></i>
+                                <p>
+                                    Độc giả
+                                </p>
+                            </a>
+                        </li>
+                        <!-- BORROW -->
+                        <li class="nav-item">
+                            <a asp-controller="BorrowRecord"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-arrow-left-right"></i>
+                                <p>
+                                    Mượn / trả sách
+                                </p>
+                            </a>
+                        </li>
+                        <!-- CATEGORY -->
+                        <li class="nav-item">
+                            <a asp-controller="Category"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-tags"></i>
+                                <p>
+                                    Thể loại
+                                </p>
+                            </a>
+                        </li>
+                        <!-- FINE -->
+                        <li class="nav-item">
+                            <a asp-controller="Fine"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-cash-coin"></i>
+                                <p>
+                                    Tiền phạt
+                                </p>
+                            </a>
+                        </li>
+                        <!-- REPORT -->
+                        <li class="nav-item">
+                            <a asp-controller="Report"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-bar-chart"></i>
+                                <p>
+                                    Báo cáo
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+        <!-- ========================= -->
+        <!-- MAIN CONTENT -->
+        <!-- ========================= -->
+        <main class="app-main">
+            <div class="app-content">
+                <div class="container-fluid pt-3">
+                    @RenderBody()
+                </div>
+            </div>
+        </main>
+        <!-- ========================= -->
+        <!-- FOOTER -->
+        <!-- ========================= -->
+        <footer class="app-footer">
+            <strong>
+                Library Management
+            </strong>
+            <span>
+                &copy; @DateTime.Now.Year
+            </span>
+        </footer>
+    </div>
+    <adminlte-scripts />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,200 @@
+@model Library.Models.Member
+@{
+    ViewData["Title"] = "Thêm độc giả";
+}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Thêm độc giả</h1>
+            <p class="text-muted mb-0">Thêm một độc giả mới vào thư viện</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <!-- Thông tin độc giả -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Thông tin độc giả
+                        </h3>
+                    </div>
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div asp-validation-summary="ModelOnly"
+                                 class="text-danger"
+                                 role="alert">
+                            </div>
+                            <!-- Họ tên -->
+                            <div class="mb-4">
+                                <label asp-for="FullName" class="form-label">
+                                    Họ tên <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="FullName"
+                                       class="form-control"
+                                       placeholder="Ví dụ: Lệ Phi Vũ" />
+                                <span asp-validation-for="FullName"
+                                      class="text-danger">
+                                </span>
+                                <div class="form-text">
+                                    Nhập họ và tên đầy đủ của độc giả.
+                                </div>
+                            </div>
+                            <!-- Email -->
+                            <div class="mb-4">
+                                <label asp-for="Email" class="form-label">
+                                    Email
+                                </label>
+                                <input asp-for="Email"
+                                       type="email"
+                                       class="form-control"
+                                       placeholder="Ví dụ: lephivu@gmail.com" />
+                                <span asp-validation-for="Email"
+                                      class="text-danger">
+                                </span>
+                                <div class="form-text">
+                                    Nhập địa chỉ email của độc giả.
+                                </div>
+                            </div>
+                            <!-- Số điện thoại -->
+                            <div class="mb-4">
+                                <label asp-for="Phone" class="form-label">
+                                    Số điện thoại
+                                </label>
+                                <input asp-for="Phone"
+                                       class="form-control"
+                                       placeholder="Ví dụ: 0123456789" />
+                                <span asp-validation-for="Phone"
+                                      class="text-danger">
+                                </span>
+                                <div class="form-text">
+                                    Nhập số điện thoại liên hệ.
+                                </div>
+                            </div>
+                            <!-- Địa chỉ -->
+                            <div class="mb-4">
+                                <label asp-for="Address" class="form-label">
+                                    Địa chỉ
+                                </label>
+                                <textarea asp-for="Address"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Ví dụ: Hà Nội, Việt Nam"></textarea>
+                                <span asp-validation-for="Address"
+                                      class="text-danger">
+                                </span>
+                                <div class="form-text">
+                                    Nhập địa chỉ hiện tại của độc giả.
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card Footer -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>
+                                Lưu độc giả
+                            </button>
+                            <a asp-action="Index"
+                               class="btn btn-secondary ms-2">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Hủy
+                            </a>
+                        </div>
+                
+                </div>
+            </div>
+            <!-- Thông tin thẻ -->
+            <div class="col-lg-4">
+                <!-- Thời hạn -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            Thông tin thẻ
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Ngày hết hạn -->
+                        <div class="mb-3">
+                            <label asp-for="ExpiryDate" class="form-label">
+                                Ngày hết hạn
+                            </label>
+                            <input asp-for="ExpiryDate" class="form-control" type="date" />
+                            <span asp-validation-for="ExpiryDate" class="text-danger">
+                            </span>
+                            <div class="form-text">
+                                Ngày hết hạn thẻ độc giả.
+                            </div>
+                        </div>
+                    </div>
+           
+
+                </div>
+                <!-- Thông tin hệ thống -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Thông tin hệ thống
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="text-muted small">
+                                Mã độc giả
+                            </div>
+                            <div>
+                                <span class="badge text-bg-secondary">
+                                    Tự động
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-muted small">
+                                Ngày gia nhập
+                            </div>
+                            <div>
+                                <span class="badge text-bg-success">
+                                    @DateTime.Now.ToString("dd/MM/yyyy")
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-muted small">
+                                Tình trạng
+                            </div>
+                            <div>
+                                <span class="badge text-bg-success">
+                                    ACTIVE
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-muted small">
+                                Sách đánh mất
+                            </div>
+                            <div>
+                                <span class="badge text-bg-secondary">
+                                    0 sách
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

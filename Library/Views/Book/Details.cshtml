@@ -1,0 +1,238 @@
+@model Library.Models.Book
+@{
+    ViewData["Title"] = "Chi tiết sách";
+}
+<div class="container-fluid">
+    <!-- Tiêu đề -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Chi tiết sách</h1>
+            <p class="text-muted mb-0">Thông tin chi tiết của sách trong thư viện</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Thông tin chính -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-book me-2"></i>
+                        Thông tin sách
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Tên sách -->
+                    <div class="mb-4">
+                        <label class="form-label text-muted">
+                            Tên sách
+                        </label>
+                        <h4 class="mb-0">
+                            @Model.Title
+                        </h4>
+                    </div>
+                    <hr />
+                    <!-- ISBN -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-semibold">
+                            <i class="bi bi-upc-scan me-2"></i>
+                            ISBN
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Isbn
+                        </div>
+                    </div>
+                    <!-- Tác giả -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-semibold">
+                            <i class="bi bi-person me-2"></i>
+                            Tác giả
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Author
+                        </div>
+                    </div>
+                    <!-- Nhà xuất bản -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-semibold">
+                            <i class="bi bi-building me-2"></i>
+                            Nhà xuất bản
+                        </div>
+                        <div class="col-md-8">
+                            @(string.IsNullOrWhiteSpace(Model.Publisher)
+                                ? "Chưa cập nhật"
+                                : Model.Publisher)
+                        </div>
+                    </div>
+                    <!-- Năm xuất bản -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-semibold">
+                            <i class="bi bi-calendar3 me-2"></i>
+                            Năm xuất bản
+                        </div>
+                        <div class="col-md-8">
+                            @Model.PublishYear
+                        </div>
+                    </div>
+                    <!-- Thể loại -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-semibold">
+                            <i class="bi bi-tags me-2"></i>
+                            Thể loại
+                        </div>
+                        <div class="col-md-8">
+                            @(Model.Category?.Name ?? "Chưa xác định")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Mô tả -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-card-text me-2"></i>
+                        Mô tả
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p class="mb-0">
+                            @Model.Description
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            Chưa có mô tả cho sách này.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Thông tin kho -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-box-seam me-2"></i>
+                        Thông tin kho
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Tổng số -->
+                    <div class="text-center mb-4">
+                        <div class="text-muted mb-1">
+                            Tổng số lượng
+                        </div>
+                        <h2 class="mb-0">
+                            @Model.TotalCopies
+                        </h2>
+                        <small class="text-muted">
+                            cuốn sách
+                        </small>
+                    </div>
+                    <hr />
+                    <!-- Có sẵn -->
+                    <div class="text-center mb-4">
+                        <div class="text-muted mb-1">
+                            Số lượng có sẵn
+                        </div>
+                        <h2 class="text-success mb-0">
+                            @Model.AvailableCopies
+                        </h2>
+                        <small class="text-muted">
+                            cuốn sách
+                        </small>
+                    </div>
+                    <hr />
+                    <!-- Đang được mượn -->
+                    <div class="text-center">
+                        <div class="text-muted mb-1">
+                            Đang được mượn
+                        </div>
+                        <h2 class="text-warning mb-0">
+                            @(Model.TotalCopies - Model.AvailableCopies)
+                        </h2>
+                        <small class="text-muted">
+                            cuốn sách
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <!-- Thời gian -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Thông tin hệ thống
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Ngày tạo
+                        </div>
+                        <div class="fw-semibold">
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Cập nhật lần cuối
+                        </div>
+                        <div class="fw-semibold">
+                            @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-muted small">
+                            Trạng thái
+                        </div>
+                        @if (Model.DeletedAt == null)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Đang hoạt động
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                <i class="bi bi-trash me-1"></i>
+                                Đã xóa
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Nút thao tác -->
+    <div class="card">
+        <div class="card-body">
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary">
+                <i class="bi bi-pencil me-1"></i>
+                Chỉnh sửa
+            </a>
+            <a asp-action="Delete"
+               asp-route-id="@Model.Id"
+               class="btn btn-danger ms-2">
+                <i class="bi bi-trash me-1"></i>
+                Xóa sách
+            </a>
+            <a asp-action="Index"
+               class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left me-1"></i>
+                Danh sách sách
+            </a>
+        </div>
+    </div>
+</div>

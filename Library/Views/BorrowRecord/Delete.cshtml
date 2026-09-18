@@ -1,0 +1,301 @@
+@model Library.Models.BorrowRecord
+
+@{
+    ViewData["Title"] = "Xóa lượt mượn";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Xóa lượt mượn</h1>
+            <p class="text-muted mb-0">Xác nhận xóa lượt mượn khỏi hệ thống</p>
+        </div>
+
+        <div>
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-danger mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Xác nhận xóa lượt mượn
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="alert alert-warning d-flex align-items-start"
+                         role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+
+                        <div>
+                            <strong>Cảnh báo!</strong>
+
+                            <p class="mb-0 mt-1">
+                                Bạn có chắc chắn muốn xóa lượt mượn này không?
+                                Hãy kiểm tra thông tin trước khi thực hiện.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Mã lượt mượn
+                        </div>
+
+                        <div class="col-md-8">
+                            <span class="badge text-bg-secondary">
+                                #@Model.Id
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Độc giả
+                        </div>
+
+                        <div class="col-md-8">
+                            @if (Model.Member != null)
+                            {
+                                <div>
+                                    @Model.Member.FullName
+                                </div>
+
+                                <div class="text-muted small">
+                                    Mã: @Model.Member.MemberCode
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Không tìm thấy thông tin
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Sách
+                        </div>
+
+                        <div class="col-md-8">
+                            @if (Model.Book != null)
+                            {
+                                <div>
+                                    @Model.Book.Title
+                                </div>
+
+                                <div class="text-muted small">
+                                    ISBN: @Model.Book.Isbn
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Không tìm thấy thông tin
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Ngày mượn
+                        </div>
+
+                        <div class="col-md-8">
+                            @Model.BorrowDate.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Hạn trả
+                        </div>
+
+                        <div class="col-md-8">
+                            @Model.DueDate.ToString("dd/MM/yyyy")
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 fw-semibold">
+                            Ngày trả
+                        </div>
+
+                        <div class="col-md-8">
+                            @if (Model.ReturnDate.HasValue)
+                            {
+                                @Model.ReturnDate.Value.ToString("dd/MM/yyyy")
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Chưa trả
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 fw-semibold">
+                            Trạng thái
+                        </div>
+
+                        <div class="col-md-8">
+                            @switch (Model.Status.ToString())
+                            {
+                                case "BORROWING":
+                                    <span class="badge text-bg-primary">
+                                        <i class="bi bi-book me-1"></i>
+                                        Đang mượn
+                                    </span>
+                                    break;
+
+                                case "RETURNED":
+                                    <span class="badge text-bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Đã trả
+                                    </span>
+                                    break;
+
+                                case "OVERDUE":
+                                    <span class="badge text-bg-danger">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        Quá hạn
+                                    </span>
+                                    break;
+
+                                default:
+                                    <span class="badge text-bg-secondary">
+                                        @Model.Status
+                                    </span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <form asp-action="Delete"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               asp-for="Id" />
+
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="return confirm('Bạn có chắc chắn muốn xóa lượt mượn này không?');">
+                            <i class="bi bi-trash me-1"></i>
+                            Xác nhận xóa
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Hủy
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-journal-text me-2"></i>
+                        Tóm tắt
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Độc giả
+                        </div>
+
+                        <strong>
+                            @(Model.Member?.FullName ?? "Không có thông tin")
+                        </strong>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Sách
+                        </div>
+
+                        <strong>
+                            @(Model.Book?.Title ?? "Không có thông tin")
+                        </strong>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small mb-1">
+                            Trạng thái
+                        </div>
+
+                        @switch (Model.Status.ToString())
+                        {
+                            case "BORROWING":
+                                <span class="badge text-bg-primary">
+                                    Đang mượn
+                                </span>
+                                break;
+
+                            case "RETURNED":
+                                <span class="badge text-bg-success">
+                                    Đã trả
+                                </span>
+                                break;
+
+                            case "OVERDUE":
+                                <span class="badge text-bg-danger">
+                                    Quá hạn
+                                </span>
+                                break;
+
+                            default:
+                                <span class="badge text-bg-secondary">
+                                    @Model.Status
+                                </span>
+                                break;
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-warning">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Lưu ý
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="bi bi-check2 me-1"></i>
+                        Kiểm tra thông tin trước khi xóa.
+                    </p>
+
+                    <p class="mb-0">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        Nếu lượt mượn đã trả sách, hãy cân nhắc trước khi xóa lịch sử.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

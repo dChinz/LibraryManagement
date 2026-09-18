@@ -1,0 +1,257 @@
+@model Library.Models.Fine
+@{
+    ViewData["Title"] = "Chi tiết tiền phạt";
+}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Chi tiết tiền phạt</h1>
+            <p class="text-muted mb-0">
+                Xem thông tin chi tiết khoản phạt của độc giả
+            </p>
+        </div>
+        <div>
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary me-2">
+                <i class="bi bi-pencil-square me-1"></i>
+                Chỉnh sửa
+            </a>
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Thông tin khoản phạt -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-cash-coin me-2"></i>
+                        Thông tin khoản phạt
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Số tiền -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="text-muted small mb-1">
+                                Mã khoản phạt
+                            </div>
+                            <div class="fw-semibold">
+                                #@Model.Id
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="text-muted small mb-1">
+                                Số tiền phạt
+                            </div>
+                            <div class="fw-bold fs-4 text-danger">
+                                @Model.Amount.ToString("N0") ₫
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <!-- Lý do -->
+                    <div class="mb-4">
+                        <div class="text-muted small mb-2">
+                            Lý do phạt
+                        </div>
+                        @if (string.IsNullOrWhiteSpace(Model.Reason))
+                        {
+                            <div class="text-muted">
+                                <i class="bi bi-dash-circle me-1"></i>
+                                Chưa có lý do
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.Reason
+                            </div>
+                        }
+                    </div>
+                    <hr />
+                    <!-- Trạng thái -->
+                    <div class="mb-4">
+                        <div class="text-muted small mb-2">
+                            Trạng thái thanh toán
+                        </div>
+                        @if (Model.IsPaid)
+                        {
+                            <span class="badge text-bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Đã thanh toán
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning">
+                                <i class="bi bi-clock me-1"></i>
+                                Chưa thanh toán
+                            </span>
+                        }
+                    </div>
+                    <hr />
+                    <!-- Ngày thanh toán -->
+                    <div>
+                        <div class="text-muted small mb-2">
+                            Ngày thanh toán
+                        </div>
+                        @if (Model.PaidDate.HasValue)
+                        {
+                            <div class="fw-semibold">
+                                <i class="bi bi-calendar-check me-1"></i>
+                                @Model.PaidDate.Value.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted">
+                                <i class="bi bi-calendar-x me-1"></i>
+                                Chưa thanh toán
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- Thông tin lượt mượn -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-book me-2"></i>
+                        Thông tin lượt mượn
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="text-muted small mb-1">
+                                Mã lượt mượn
+                            </div>
+                            <div>
+                                <span class="badge text-bg-secondary fs-6">
+                                    #@Model.BorrowRecordId
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="text-muted small mb-1">
+                                Độc giả
+                            </div>
+                            @if (Model.BorrowRecord?.Member != null)
+                            {
+                                <div class="fw-semibold">
+                                    @Model.BorrowRecord.Member.FullName
+                                </div>
+                                <div class="text-muted small">
+                                    @Model.BorrowRecord.Member.MemberCode
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-muted">
+                                    Không có thông tin
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-muted small mb-1">
+                                Sách
+                            </div>
+                            @if (Model.BorrowRecord?.Book != null)
+                            {
+                                <div class="fw-semibold">
+                                    @Model.BorrowRecord.Book.Title
+                                </div>
+                                <div class="text-muted small">
+                                    ISBN: @Model.BorrowRecord.Book.Isbn
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-muted">
+                                    Không có thông tin
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Thông tin hệ thống -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Thông tin thời gian
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Ngày tạo
+                        </div>
+                        <div class="fw-semibold">
+                            <i class="bi bi-calendar-plus me-1"></i>
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-muted small mb-1">
+                            Ngày cập nhật
+                        </div>
+                        <div class="fw-semibold">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Trạng thái thanh toán -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Tổng quan
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        @if (Model.IsPaid)
+                        {
+                            <i class="bi bi-check-circle-fill text-success"
+                               style="font-size: 60px;"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-exclamation-circle-fill text-warning"
+                               style="font-size: 60px;"></i>
+                        }
+                    </div>
+                    <h5 class="mb-2">
+                        @if (Model.IsPaid)
+                        {
+                            <span>Khoản phạt đã thanh toán</span>
+                        }
+                        else
+                        {
+                            <span>Khoản phạt chưa thanh toán</span>
+                        }
+                    </h5>
+                    <div class="text-muted">
+                        Số tiền:
+                        <strong>
+                            @Model.Amount.ToString("N0") ₫
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

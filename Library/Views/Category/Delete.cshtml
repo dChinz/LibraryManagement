@@ -1,0 +1,85 @@
+﻿@model Library.Models.Category
+
+@{
+    ViewData["Title"] = "Xóa thể loại";
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h1 class="mb-1">Xóa thể loại</h1>
+        <p class="text-muted mb-0">Xác nhận xóa thể loại khỏi hệ thống</p>
+    </div>
+
+    <div class="card border-danger">
+        <div class="card-header">
+            <h3 class="card-title text-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Xác nhận xóa
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Bạn có chắc chắn muốn xóa thể loại này không?
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Mã thể loại</div>
+                <div class="col-md-9">@Model.Id</div>
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Tên thể loại</div>
+                <div class="col-md-9">@Model.Name</div>
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Mô tả</div>
+                <div class="col-md-9">
+                    @if (string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <span class="text-muted">Chưa có mô tả</span>
+                    }
+                    else
+                    {
+                        @Model.Description
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-3 fw-bold">Số lượng sách</div>
+                <div class="col-md-9">
+                    @(Model.Books?.Count ?? 0) sách
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <button type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm('Bạn có chắc chắn muốn xóa thể loại này không?');">
+                    <i class="bi bi-trash me-1"></i>
+                    Xác nhận xóa
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary ms-2">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Hủy
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,349 @@
+@model Library.Models.Fine
+
+@{
+    ViewData["Title"] = "Chỉnh sửa khoản phạt";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Chỉnh sửa khoản phạt</h1>
+            <p class="text-muted mb-0">
+                Cập nhật thông tin khoản phạt của độc giả
+            </p>
+        </div>
+
+        <div>
+            <a asp-action="Details"
+               asp-route-id="@Model.Id"
+               class="btn btn-info me-2">
+                <i class="bi bi-eye me-1"></i>
+                Chi tiết
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- Form chính -->
+        <div class="col-lg-8">
+
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Thông tin khoản phạt
+                    </h3>
+                </div>
+
+                <form asp-action="Edit" method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="card-body">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"
+                             role="alert">
+                        </div>
+
+                        <!-- Lượt mượn -->
+                        <div class="mb-4">
+
+                            <label asp-for="BorrowRecordId" class="form-label">
+                                Lượt mượn <span class="text-danger">*</span>
+                            </label>
+
+                            <select asp-for="BorrowRecordId"
+                                    class="form-select"
+                                    asp-items="ViewBag.BorrowRecordId">
+                            </select>
+
+                            <span asp-validation-for="BorrowRecordId"
+                                  class="text-danger">
+                            </span>
+
+                            <div class="form-text">
+                                Chọn lượt mượn liên quan đến khoản phạt.
+                            </div>
+
+                        </div>
+
+                        <!-- Số tiền -->
+                        <div class="mb-4">
+
+                            <label asp-for="Amount" class="form-label">
+                                Số tiền phạt <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="input-group">
+
+                                <input asp-for="Amount"
+                                       type="number"
+                                       class="form-control"
+                                       min="0"
+                                       step="1000"
+                                       placeholder="Ví dụ: 50000" />
+
+                                <span class="input-group-text">
+                                    ₫
+                                </span>
+
+                            </div>
+
+                            <span asp-validation-for="Amount"
+                                  class="text-danger">
+                            </span>
+
+                            <div class="form-text">
+                                Nhập số tiền phạt bằng VNĐ.
+                            </div>
+
+                        </div>
+
+                        <!-- Lý do -->
+                        <div class="mb-4">
+
+                            <label asp-for="Reason" class="form-label">
+                                Lý do phạt
+                            </label>
+
+                            <textarea asp-for="Reason"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Ví dụ: Trả sách quá hạn, làm hư hỏng sách..."></textarea>
+
+                            <span asp-validation-for="Reason"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <!-- Trạng thái thanh toán -->
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Trạng thái thanh toán
+                            </label>
+
+                            <div class="form-check form-switch">
+
+                                <input asp-for="IsPaid"
+                                       class="form-check-input"
+                                       role="switch"
+                                       id="isPaid" />
+
+                                <label class="form-check-label"
+                                       for="isPaid">
+                                    Đã thanh toán
+                                </label>
+
+                            </div>
+
+                            <span asp-validation-for="IsPaid"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <!-- Ngày thanh toán -->
+                        <div class="mb-4"
+                             id="paidDateContainer">
+
+                            <label asp-for="PaidDate" class="form-label">
+                                Ngày thanh toán
+                            </label>
+
+                            <input asp-for="PaidDate"
+                                   type="datetime-local"
+                                   class="form-control" />
+
+                            <span asp-validation-for="PaidDate"
+                                  class="text-danger">
+                            </span>
+
+                            <div class="form-text">
+                                Để trống nếu khoản phạt chưa được thanh toán.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Hủy
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Thông tin bên phải -->
+        <div class="col-lg-4">
+
+            <!-- Thông tin khoản phạt -->
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin hiện tại
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Mã khoản phạt
+                        </div>
+
+                        <span class="badge text-bg-secondary fs-6">
+                            #@Model.Id
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Số tiền hiện tại
+                        </div>
+
+                        <div class="fw-bold fs-4 text-danger">
+                            @Model.Amount.ToString("N0") ₫
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small mb-1">
+                            Trạng thái
+                        </div>
+
+                        @if (Model.IsPaid)
+                        {
+                            <span class="badge text-bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Đã thanh toán
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning">
+                                <i class="bi bi-clock me-1"></i>
+                                Chưa thanh toán
+                            </span>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Thông tin hệ thống -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Thông tin hệ thống
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Ngày tạo
+                        </div>
+
+                        <div class="fw-semibold">
+                            <i class="bi bi-calendar-plus me-1"></i>
+
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small mb-1">
+                            Cập nhật lần cuối
+                        </div>
+
+                        <div class="fw-semibold">
+                            <i class="bi bi-calendar-check me-1"></i>
+
+                            @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const isPaid = document.getElementById("isPaid");
+            const paidDateContainer =
+                document.getElementById("paidDateContainer");
+
+            const paidDate =
+                document.getElementById("PaidDate");
+
+            function updatePaidDate() {
+
+                if (isPaid.checked) {
+
+                    paidDateContainer.style.display = "";
+
+                } else {
+
+                    paidDateContainer.style.display = "none";
+
+                    if (paidDate) {
+                        paidDate.value = "";
+                    }
+
+                }
+            }
+
+            updatePaidDate();
+
+            isPaid.addEventListener("change", updatePaidDate);
+
+        });
+    </script>
+}

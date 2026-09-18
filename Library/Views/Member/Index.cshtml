@@ -1,0 +1,273 @@
+@model IEnumerable<Library.Models.Member>
+@{
+    ViewData["Title"] = "Quản lý độc giả";
+}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Quản lý độc giả</h1>
+            <p class="text-muted mb-0">
+                Quản lý thông tin độc giả trong thư viện
+            </p>
+        </div>
+        <div>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-person-plus me-1"></i>
+                Thêm độc giả
+            </a>
+        </div>
+    </div>
+    <!-- Card -->
+    <div class="card shadow-sm">
+        <!-- Card Header -->
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-people me-2"></i>
+                    Danh sách độc giả
+                </h3>
+                <span class="badge text-bg-primary">
+                    @Model.Count() độc giả
+                </span>
+            </div>
+        </div>
+        <!-- Search -->
+        <div class="card-body border-bottom">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text"
+                               id="searchMember"
+                               class="form-control"
+                               placeholder="Tìm kiếm theo tên, mã độc giả, email, số điện thoại..." />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0"
+                   id="memberTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">
+                            #
+                        </th>
+                        <th style="min-width: 200px;">
+                            @Html.DisplayNameFor(model => model.FullName)
+                        </th>
+                        <th style="width: 150px;">
+                            @Html.DisplayNameFor(model => model.MemberCode)
+                        </th>
+                        <th style="min-width: 220px;">
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th style="width: 150px;">
+                            @Html.DisplayNameFor(model => model.Phone)
+                        </th>
+                        @* <th style="min-width: 220px;">
+                            @Html.DisplayNameFor(model => model.Address)
+                        </th> *@
+                        <th style="width: 130px;">
+                            @Html.DisplayNameFor(model => model.JoinDate)
+                        </th>
+                        <th style="width: 130px;">
+                            @Html.DisplayNameFor(model => model.ExpiryDate)
+                        </th>
+                        <th style="width: 140px;">
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
+                        <th style="width: 130px;">
+                            @Html.DisplayNameFor(model => model.LostBookCount)
+                        </th>
+                        <th style="width: 130px;">
+                            Thao tác
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <!-- ID -->
+                                <td class="fw-semibold">
+                                    @item.Id
+                                </td>
+                                <!-- Họ tên -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="member-icon me-2">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span class="fw-semibold member-name"
+                                              title="@item.FullName">
+                                            @item.FullName
+                                        </span>
+                                    </div>
+                                </td>
+                                <!-- Mã độc giả -->
+                                <td>
+                                    <span class="badge text-bg-secondary">
+                                        @item.MemberCode
+                                    </span>
+                                </td>
+                                <!-- Email -->
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Email))
+                                    {
+                                        <span title="@item.Email">
+                                            @item.Email
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa cập nhật
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Số điện thoại -->
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Phone))
+                                    {
+                                        <span>
+                                            <i class="bi bi-telephone me-1"></i>
+                                            @item.Phone
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa cập nhật
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Địa chỉ -->
+                                @* <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Address))
+                                    {
+                                        <span class="address-column"
+                                              title="@item.Address">
+                                            @item.Address
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa cập nhật
+                                        </span>
+                                    }
+                                </td> *@
+                                <!-- Ngày gia nhập -->
+                                <td>
+                                    @item.JoinDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <!-- Ngày hết hạn -->
+                                <td>
+                                    @item.ExpiryDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <!-- Trạng thái -->
+                                <td>
+                                    @if (item.Status != null)
+                                    {
+                                        <span class="badge text-bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            @item.Status
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-secondary">
+                                            Chưa xác định
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Số sách mất -->
+                                <td>
+                                    @if (item.LostBookCount > 0)
+                                    {
+                                        <span class="badge text-bg-danger">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                            @item.LostBookCount sách
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-success">
+                                            0 sách
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Thao tác -->
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-info"
+                                           title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-warning"
+                                           title="Chỉnh sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-danger"
+                                           title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="11" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-people fs-1"></i>
+                                    <p class="mt-3 mb-0">
+                                        Chưa có độc giả nào
+                                    </p>
+                                    <a asp-action="Create"
+                                       class="btn btn-primary btn-sm mt-3">
+                                        <i class="bi bi-person-plus me-1"></i>
+                                        Thêm độc giả đầu tiên
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Footer -->
+        <div class="card-footer text-muted">
+            Tổng số:
+            <strong>@Model.Count()</strong>
+            độc giả
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.getElementById("searchMember").addEventListener("keyup", function () {
+            const keyword = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll("#memberTable tbody tr");
+            rows.forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(keyword) ? "" : "none";
+            });
+        });
+    </script>
+}

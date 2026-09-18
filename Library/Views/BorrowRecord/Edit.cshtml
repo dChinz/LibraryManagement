@@ -1,0 +1,288 @@
+@model Library.Models.BorrowRecord
+
+@{
+    ViewData["Title"] = "Chỉnh sửa lượt mượn";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Chỉnh sửa lượt mượn</h1>
+            <p class="text-muted mb-0">Cập nhật thông tin lượt mượn sách</p>
+        </div>
+
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Thông tin mượn sách
+                    </h3>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="BorrowDate" />
+                    <input type="hidden" asp-for="CreatedAt" />
+
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"
+                             role="alert"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="MemberId" class="form-label">
+                                Độc giả <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+
+                                <input type="text"
+                                       id="memberSearch"
+                                       class="form-control"
+                                       placeholder="Tìm kiếm theo mã hoặc tên độc giả..." />
+                            </div>
+
+                            <select asp-for="MemberId"
+                                    id="memberSelect"
+                                    class="form-select"
+                                    asp-items="ViewBag.MemberId"
+                                    size="5">
+                            </select>
+
+                            <span asp-validation-for="MemberId"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Nhập tên hoặc mã độc giả để tìm kiếm.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="BookId" class="form-label">
+                                Sách <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+
+                                <input type="text"
+                                       id="bookSearch"
+                                       class="form-control"
+                                       placeholder="Tìm kiếm theo ISBN hoặc tên sách..." />
+                            </div>
+
+                            <select asp-for="BookId"
+                                    id="bookSelect"
+                                    class="form-select"
+                                    asp-items="ViewBag.BookId"
+                                    size="7">
+                            </select>
+
+                            <span asp-validation-for="BookId"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Chọn sách cần cập nhật cho lượt mượn này.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="DueDate" class="form-label">
+                                Hạn trả <span class="text-danger">*</span>
+                            </label>
+
+                            <input asp-for="DueDate"
+                                   type="date"
+                                   class="form-control" />
+
+                            <span asp-validation-for="DueDate"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ReturnDate" class="form-label">
+                                Ngày trả
+                            </label>
+
+                            <input asp-for="ReturnDate"
+                                   type="date"
+                                   class="form-control" />
+
+                            <span asp-validation-for="ReturnDate"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Để trống nếu sách chưa được trả.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Status" class="form-label">
+                                Trạng thái <span class="text-danger">*</span>
+                            </label>
+
+                            <select asp-for="Status" class="form-select">
+                                <option value="BORROWING">Đang mượn</option>
+                                <option value="RETURNED">Đã trả</option>
+                                <option value="OVERDUE">Quá hạn</option>
+                            </select>
+
+                            <span asp-validation-for="Status"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <label asp-for="Note" class="form-label">
+                                Ghi chú
+                            </label>
+
+                            <textarea asp-for="Note"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Nhập ghi chú nếu có..."></textarea>
+
+                            <span asp-validation-for="Note"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin hệ thống
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Mã lượt mượn
+                        </div>
+
+                        <strong>#@Model.Id</strong>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Ngày mượn
+                        </div>
+
+                        <strong>
+                            @Model.BorrowDate.ToString("dd/MM/yyyy HH:mm")
+                        </strong>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small mb-1">
+                            Ngày tạo
+                        </div>
+
+                        <strong>
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </strong>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small mb-1">
+                            Cập nhật lần cuối
+                        </div>
+
+                        <strong>
+                            @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-warning">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Lưu ý
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="bi bi-check2 me-1"></i>
+                        Kiểm tra thông tin trước khi lưu thay đổi.
+                    </p>
+
+                    <p class="mb-0">
+                        <i class="bi bi-calendar-check me-1"></i>
+                        Hạn trả phải phù hợp với ngày mượn.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("memberSearch").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase().trim();
+            const select = document.getElementById("memberSelect");
+            const options = select.querySelectorAll("option");
+
+            options.forEach(function (option) {
+                const text = option.textContent.toLowerCase();
+
+                option.style.display =
+                    text.includes(keyword) ? "" : "none";
+            });
+        });
+
+        document.getElementById("bookSearch").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase().trim();
+            const select = document.getElementById("bookSelect");
+            const options = select.querySelectorAll("option");
+
+            options.forEach(function (option) {
+                const text = option.textContent.toLowerCase();
+
+                option.style.display =
+                    text.includes(keyword) ? "" : "none";
+            });
+        });
+    </script>
+}
