@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Library.Models.User 
+@{
     ViewData["Title"] = "Đăng nhập";
     Layout = null;
 }
@@ -60,27 +61,19 @@
                         </span>
                     </div>
                 }
-                <form asp-controller="Account"
-                      asp-action="Login"
-                      method="post">
+                <form asp-controller="Account" asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
                     <!-- USERNAME -->
                     <div class="mb-3">
-                        <label for="username"
-                               class="form-label">
+                        <label for="username" class="form-label">
                             Tên đăng nhập
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="bi bi-person"></i>
                             </span>
-                            <input type="text"
-                                   id="username"
-                                   name="username"
-                                   class="form-control"
-                                   placeholder="Nhập tên đăng nhập"
-                                   autocomplete="username"
-                                   required />
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Nhập tên đăng nhập" autocomplete="username" required />
+                            @* <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập" /> *@
                         </div>
                     </div>
                     <!-- PASSWORD -->
@@ -100,6 +93,7 @@
                                    placeholder="Nhập mật khẩu"
                                    autocomplete="current-password"
                                    required />
+                            @* <input asp-for="PasswordHash" class="form-control" placeholder="Nhập tên đăng nhập" /> *@
                             <button type="button"
                                     class="btn password-toggle"
                                     id="togglePassword">

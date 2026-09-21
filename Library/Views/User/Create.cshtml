@@ -1,0 +1,260 @@
+@model Library.Models.User
+
+@{
+    ViewData["Title"] = "Thêm người dùng";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">
+                <i class="bi bi-person-plus me-2"></i>
+                Thêm người dùng
+            </h1>
+
+            <p class="text-muted mb-0">
+                Tạo tài khoản mới cho hệ thống quản lý thư viện
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header  border-bottom py-3">
+                    <h5 class="mb-1 fw-semibold">
+                        <i class="bi bi-person-vcard me-2"></i>
+                        Thông tin tài khoản
+                    </h5>
+
+                    <small class="text-muted">
+                        Nhập đầy đủ thông tin để tạo tài khoản mới
+                    </small>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form asp-action="Create" method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger"
+                             role="alert"></div>
+
+                        <div class="row g-4">
+
+                            <!-- Username -->
+                            <div class="col-md-6">
+                                <label asp-for="Username"
+                                       class="form-label fw-semibold">
+                                    Tên đăng nhập
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text ">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+
+                                    <input asp-for="Username"
+                                           class="form-control"
+                                           placeholder="Nhập tên đăng nhập" />
+                                </div>
+
+                                <span asp-validation-for="Username"
+                                      class="text-danger small"></span>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label asp-for="PasswordHash"
+                                       class="form-label fw-semibold">
+                                    Mật khẩu
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text ">
+                                        <i class="bi bi-lock"></i>
+                                    </span>
+
+                                    <input asp-for="PasswordHash"
+                                           type="password"
+                                           class="form-control"
+                                           placeholder="Nhập mật khẩu" />
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            id="togglePassword"
+                                            title="Hiện/ẩn mật khẩu">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+
+                                <span asp-validation-for="PasswordHash"
+                                      class="text-danger small"></span>
+                            </div>
+
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label asp-for="FullName"
+                                       class="form-label fw-semibold">
+                                    Họ và tên
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text ">
+                                        <i class="bi bi-person-vcard"></i>
+                                    </span>
+
+                                    <input asp-for="FullName"
+                                           class="form-control"
+                                           placeholder="Nhập họ và tên" />
+                                </div>
+
+                                <span asp-validation-for="FullName"
+                                      class="text-danger small"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label asp-for="Email"
+                                       class="form-label fw-semibold">
+                                    Email
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text ">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+
+                                    <input asp-for="Email"
+                                           type="email"
+                                           class="form-control"
+                                           placeholder="example@email.com" />
+                                </div>
+
+                                <span asp-validation-for="Email"
+                                      class="text-danger small"></span>
+                            </div>
+
+                            <!-- Role -->
+                            <div class="col-md-6">
+                                <label asp-for="Role"
+                                       class="form-label fw-semibold">
+                                    Quyền truy cập
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text ">
+                                        <i class="bi bi-shield-check"></i>
+                                    </span>
+
+                                    <select asp-for="Role"
+                                            class="form-select">
+                                        <option value="">-- Chọn quyền --</option>
+                                        <option value="ADMIN">
+                                            ADMIN
+                                        </option>
+                                        <option value="LIBRARIAN">
+                                            LIBRARIAN
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <span asp-validation-for="Role"
+                                      class="text-danger small"></span>
+                            </div>
+
+                            <!-- Is Active -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Trạng thái tài khoản
+                                </label>
+
+                                <div class="border rounded p-3 ">
+
+                                    <div class="form-check form-switch">
+                                        <input asp-for="IsActive"
+                                               class="form-check-input"
+                                               role="switch"
+                                               style="width: 2.5em; height: 1.25em;" />
+
+                                        <label asp-for="IsActive"
+                                               class="form-check-label ms-2">
+                                            Tài khoản đang hoạt động
+                                        </label>
+                                    </div>
+
+                                    <small class="text-muted d-block mt-2">
+                                        Tắt tùy chọn này nếu muốn khóa tài khoản.
+                                    </small>
+
+                                </div>
+
+                                <span asp-validation-for="IsActive"
+                                      class="text-danger small"></span>
+                            </div>
+
+                        </div>
+
+                        <!-- Divider -->
+                        <hr class="my-4" />
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a asp-action="Index"
+                               class="btn btn-light border">
+                                <i class="bi bi-x-lg me-1"></i>
+                                Hủy
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>
+                                Tạo người dùng
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function () {
+            const password = document.getElementById("PasswordHash");
+            const icon = this.querySelector("i");
+
+            if (password.type === "password") {
+                password.type = "text";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            } else {
+                password.type = "password";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            }
+        });
+    </script>
+}

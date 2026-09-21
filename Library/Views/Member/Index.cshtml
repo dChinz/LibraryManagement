@@ -174,17 +174,18 @@
                                 </td>
                                 <!-- Trạng thái -->
                                 <td>
-                                    @if (item.Status != null)
+                                    @if (item.Status == MemberStatus.ACTIVE)
                                     {
                                         <span class="badge text-bg-success">
                                             <i class="bi bi-check-circle me-1"></i>
                                             @item.Status
                                         </span>
                                     }
-                                    else
+                                    else if (item.Status == MemberStatus.EXPIRED)
                                     {
-                                        <span class="badge text-bg-secondary">
-                                            Chưa xác định
+                                        <span class="badge text-bg-warning">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                            @item.Status
                                         </span>
                                     }
                                 </td>
