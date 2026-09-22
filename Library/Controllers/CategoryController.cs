@@ -17,13 +17,25 @@ namespace Library.Controllers
 
         // GET: Category
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            var categories = await _context.Categories
-                .Include(c => c.Books)
-                .OrderBy(c => c.CreatedAt)
+            var query = _context.Categories
                 .Where(c => c.DeletedAt == default(DateTime))
+                .OrderByDescending(c => c.Id);
+
+            int totalItems = await query.CountAsync();
+
+            var categories = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.Pagination = new PaginationViewModel
+            {
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
 
             return View(categories);
         }

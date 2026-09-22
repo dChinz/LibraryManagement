@@ -237,6 +237,10 @@
         </div>
     </div>
 </div>
+@await Html.PartialAsync(
+    "_Pagination",
+    (PaginationViewModel)ViewBag.Pagination
+)
 @section Scripts {
     <script>
         document.getElementById("searchBook").addEventListener("keyup", function () {

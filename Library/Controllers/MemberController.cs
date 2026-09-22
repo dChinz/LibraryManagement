@@ -13,12 +13,27 @@ public class MemberController : Controller
     }
 
     // GET: MEMBERS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var member = await _context.Members
+        var query = _context.Members
             .Where(m => m.DeletedAt == null || m.DeletedAt == default(DateTime))
             .OrderBy(m => m.CreatedAt)
+            .OrderByDescending(c => c.Id);
+
+        int totalItems = await query.CountAsync();
+
+        var member = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        ViewBag.Pagination = new PaginationViewModel
+        {
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalItems = totalItems
+        };
+
         return View(member);
     }
 

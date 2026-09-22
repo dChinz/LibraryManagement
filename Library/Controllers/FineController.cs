@@ -15,13 +15,26 @@ public class FineController : Controller
     }
 
     // GET: FINES
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var fines = await _context.Fines
-            .Include(f => f.BorrowRecord)
-                .ThenInclude(b => b.Member)
-            .OrderByDescending(f => f.CreatedAt)
+        var query = _context.Fines
+            .Include (f => f.BorrowRecord)
+            .ThenInclude(f => f.Member)
+            .OrderByDescending(f => f.Id);
+
+        int totalItems = await query.CountAsync();
+
+        var fines = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        ViewBag.Pagination = new PaginationViewModel
+        {
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalItems = totalItems
+        };
 
         return View(fines);
     }

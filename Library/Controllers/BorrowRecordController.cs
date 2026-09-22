@@ -15,12 +15,26 @@ public class BorrowRecordController : Controller
     }
 
     // GET: BORROWRECORDS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var borrow = await _context.BorrowRecords
-            .Include(b => b.Member)
-            .Include(b => b.Book)
+        var query = _context.BorrowRecords
+                .Include(b => b.Member)
+                .Include(b => b.Book)
+                .OrderByDescending(b => b.Id);
+
+        int totalItems = await query.CountAsync();
+
+        var borrow = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        ViewBag.Pagination = new PaginationViewModel
+        {
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalItems = totalItems
+        };
 
         return View(borrow);
     }

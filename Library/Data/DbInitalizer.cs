@@ -7,223 +7,320 @@ namespace Library.Data
     {
         public static void Initalizer(IServiceProvider serviceProvider)
         {
-            using (var context = new LibraryContext(serviceProvider.GetRequiredService<DbContextOptions<LibraryContext>>()))
+            using (var context = new LibraryContext(
+                serviceProvider.GetRequiredService<DbContextOptions<LibraryContext>>()))
             {
                 context.Database.EnsureCreated();
+
                 if (context.Categories.Any())
                 {
                     return;
                 }
 
-                var categories = new Category[]
+                // =========================================================
+                // 1. SEED CATEGORY - 20 RECORDS
+                // =========================================================
+
+                var categoryNames = new[]
                 {
-                    new Category { Name = "Văn học", Description = "Tiểu thuyết, truyện ngắn, thơ ca", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                    new Category { Name = "Khoa học", Description = "Sách khoa học tự nhiên và ứng dụng", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                    new Category { Name = "Công nghệ thông tin", Description = "Lập trình, phần mềm, hệ thống", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                    new Category { Name = "Kinh tế", Description = "Quản trị, tài chính, kinh doanh", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                    new Category { Name = "Thiếu nhi", Description = "Sách dành cho trẻ em", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+                    "Văn học",
+                    "Khoa học",
+                    "Công nghệ thông tin",
+                    "Kinh tế",
+                    "Thiếu nhi",
+                    "Lịch sử",
+                    "Địa lý",
+                    "Tâm lý học",
+                    "Triết học",
+                    "Ngoại ngữ",
+                    "Giáo dục",
+                    "Y học",
+                    "Kỹ năng sống",
+                    "Nghệ thuật",
+                    "Du lịch",
+                    "Tôn giáo",
+                    "Chính trị",
+                    "Luật",
+                    "Kỹ thuật",
+                    "Thể thao"
                 };
 
-                foreach (var category in categories)
-                    context.Categories.Add(category);
+                var categories = new List<Category>();
+
+                foreach (var name in categoryNames)
+                {
+                    categories.Add(new Category
+                    {
+                        Name = name,
+                        Description = $"Sách thuộc lĩnh vực {name.ToLower()}",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    });
+                }
+
+                context.Categories.AddRange(categories);
                 context.SaveChanges();
 
-                var itCategory = context.Categories.First(c => c.Name == "Công nghệ thông tin");
-                var vanHocCategory = context.Categories.First(c => c.Name == "Văn học");
-                var kinhTeCategory = context.Categories.First(c => c.Name == "Kinh tế");
 
-                var books = new Book[]
+                // =========================================================
+                // 2. SEED BOOK - 25 RECORDS
+                // =========================================================
+
+                var categoryList = context.Categories
+                    .OrderBy(c => c.Id)
+                    .ToList();
+
+                var bookTitles = new[]
                 {
-                    new Book
+                    "Clean Code",
+                    "Design Patterns",
+                    "C# Programming",
+                    "ASP.NET Core MVC",
+                    "Lập trình Python",
+                    "Nhà Giả Kim",
+                    "Số Đỏ",
+                    "Dế Mèn Phiêu Lưu Ký",
+                    "Tuổi Thơ Dữ Dội",
+                    "Harry Potter",
+                    "Đắc Nhân Tâm",
+                    "7 Thói Quen Hiệu Quả",
+                    "Tư Duy Nhanh Và Chậm",
+                    "Cha Giàu Cha Nghèo",
+                    "Nguyên Lý Marketing",
+                    "Lược Sử Thời Gian",
+                    "Vũ Trụ",
+                    "Lịch Sử Việt Nam",
+                    "Đại Việt Sử Ký",
+                    "Nhập Môn Kinh Tế Học",
+                    "Giáo Trình Luật Dân Sự",
+                    "Cơ Sở Dữ Liệu",
+                    "Mạng Máy Tính",
+                    "Trí Tuệ Nhân Tạo",
+                    "Machine Learning Cơ Bản"
+                };
+
+                var authors = new[]
+                {
+                    "Robert C. Martin",
+                    "Erich Gamma",
+                    "Microsoft Press",
+                    "Nguyễn Văn A",
+                    "Trần Văn B",
+                    "Paulo Coelho",
+                    "Vũ Trọng Phụng",
+                    "Tô Hoài",
+                    "Phùng Quán",
+                    "J.K. Rowling",
+                    "Dale Carnegie",
+                    "Stephen R. Covey",
+                    "Daniel Kahneman",
+                    "Robert Kiyosaki",
+                    "Philip Kotler",
+                    "Stephen Hawking",
+                    "Carl Sagan",
+                    "Nguyễn Khắc Thuần",
+                    "Lê Văn Lan",
+                    "N. Gregory Mankiw",
+                    "Nguyễn Minh Tuấn",
+                    "Nguyễn Thị C",
+                    "Trần Văn D",
+                    "Nguyễn Thanh E",
+                    "Andrew Ng"
+                };
+
+                var books = new List<Book>();
+
+                for (int i = 0; i < 25; i++)
+                {
+                    int totalCopies = 3 + (i % 6);
+
+                    books.Add(new Book
                     {
-                        Isbn = "978-0132350884",
-                        Title = "Clean Code",
-                        Author = "Robert C. Martin",
-                        Publisher = "Prentice Hall",
-                        PublishYear = 2008,
-                        CategoryId = itCategory.Id,
-                        TotalCopies = 5,
-                        AvailableCopies = 5,
-                        Description = "A handbook of agile software craftsmanship.",
+                        Isbn = $"978-604-{1000000 + i}",
+                        Title = bookTitles[i],
+                        Author = authors[i],
+                        Publisher = i % 2 == 0
+                            ? "NXB Giáo Dục"
+                            : "NXB Tổng Hợp",
+                        PublishYear = 2000 + (i % 24),
+                        CategoryId = categoryList[i % categoryList.Count].Id,
+                        TotalCopies = totalCopies,
+                        AvailableCopies = totalCopies,
+                        Description = $"Thông tin mô tả cho cuốn sách {bookTitles[i]}.",
+                        CoverImagePath = null,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
-                    },
-                    new Book
+                    });
+                }
+
+                context.Books.AddRange(books);
+                context.SaveChanges();
+
+
+                // =========================================================
+                // 3. SEED MEMBER - 25 RECORDS
+                // =========================================================
+
+                var members = new List<Member>();
+
+                for (int i = 1; i <= 25; i++)
+                {
+                    bool expired = i % 5 == 0;
+
+                    members.Add(new Member
                     {
-                        Isbn = "978-0201633610",
-                        Title = "Design Patterns",
-                        Author = "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
-                        Publisher = "Addison-Wesley",
-                        PublishYear = 1994,
-                        CategoryId = itCategory.Id,
-                        TotalCopies = 3,
-                        AvailableCopies = 3,
-                        Description = "Elements of Reusable Object-Oriented Software.",
+                        MemberCode = $"MB{i:D4}",
+                        FullName = $"Nguyễn Văn Thành {i}",
+                        Email = $"member{i}@example.com",
+                        Phone = $"09{10000000 + i}",
+                        Address = $"{i} Nguyễn Trãi, Hà Nội",
+                        JoinDate = DateTime.UtcNow.AddMonths(-(i % 12)),
+                        ExpiryDate = expired
+                            ? DateTime.UtcNow.AddDays(-(i * 2))
+                            : DateTime.UtcNow.AddMonths(3 + (i % 6)),
+                        Status = expired
+                            ? MemberStatus.EXPIRED
+                            : MemberStatus.ACTIVE,
+                        LostBookCount = i % 7 == 0 ? 1 : 0,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
-                    },
-                    new Book
+                    });
+                }
+
+                context.Members.AddRange(members);
+                context.SaveChanges();
+
+
+                // =========================================================
+                // 4. SEED BORROW RECORD - 25 RECORDS
+                // =========================================================
+
+                var memberList = context.Members
+                    .OrderBy(m => m.Id)
+                    .ToList();
+
+                var bookList = context.Books
+                    .OrderBy(b => b.Id)
+                    .ToList();
+
+                var records = new List<BorrowRecord>();
+
+                for (int i = 0; i < 25; i++)
+                {
+                    var borrowDate = DateTime.UtcNow.AddDays(-(i + 5));
+
+                    BookStatus status;
+                    DateTime? returnDate = null;
+                    DateTime dueDate;
+                    string? note = null;
+
+                    // 1 - 10: Đang mượn
+                    if (i < 10)
                     {
-                        Isbn = "978-6041012345",
-                        Title = "Số đỏ",
-                        Author = "Vũ Trọng Phụng",
-                        Publisher = "NXB Văn Học",
-                        PublishYear = 1936,
-                        CategoryId = vanHocCategory.Id,
-                        TotalCopies = 4,
-                        AvailableCopies = 4,
-                        Description = "Tiểu thuyết trào phúng nổi tiếng.",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new Book
-                    {
-                        Isbn = "978-6041098765",
-                        Title = "Nhà Giả Kim",
-                        Author = "Paulo Coelho",
-                        Publisher = "NXB Hội Nhà Văn",
-                        PublishYear = 1988,
-                        CategoryId = vanHocCategory.Id,
-                        TotalCopies = 6,
-                        AvailableCopies = 6,
-                        Description = "Hành trình đi tìm kho báu và ý nghĩa cuộc sống.",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new Book
-                    {
-                        Isbn = "978-1119561225",
-                        Title = "Principles of Corporate Finance",
-                        Author = "Richard Brealey, Stewart Myers",
-                        Publisher = "McGraw-Hill",
-                        PublishYear = 2019,
-                        CategoryId = kinhTeCategory.Id,
-                        TotalCopies = 2,
-                        AvailableCopies = 2,
-                        Description = "Giáo trình tài chính doanh nghiệp kinh điển.",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        status = BookStatus.BORROWING;
+                        dueDate = DateTime.UtcNow.AddDays(7 + i);
                     }
-                };
-                foreach(var book in books )
-                    context.Books.Add( book );
-                context.SaveChanges();
 
-                var members = new List<Member>
-                {
-                    new Member
+                    // 10 - 20: Quá hạn
+                    else if (i < 20)
                     {
-                        MemberCode = "MB0001",
-                        FullName = "Tran Thi B",
-                        Email = "tranthib@example.com",
-                        Phone = "0901234567",
-                        Address = "123 Le Loi, Q1, TP.HCM",
-                        JoinDate = DateTime.UtcNow.AddMonths(-6),
-                        ExpiryDate = DateTime.UtcNow.AddMonths(6),
-                        Status = MemberStatus.ACTIVE,
-                        LostBookCount = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new Member
-                    {
-                        MemberCode = "MB0002",
-                        FullName = "Le Van C",
-                        Email = "levanc@example.com",
-                        Phone = "0912345678",
-                        Address = "45 Nguyen Trai, Q5, TP.HCM",
-                        JoinDate = DateTime.UtcNow.AddMonths(-3),
-                        ExpiryDate = DateTime.UtcNow.AddMonths(9),
-                        Status = MemberStatus.ACTIVE,
-                        LostBookCount = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new Member
-                    {
-                        MemberCode = "MB0003",
-                        FullName = "Pham Thi D",
-                        Email = "phamthid@example.com",
-                        Phone = "0987654321",
-                        Address = "78 Tran Hung Dao, Ha Noi",
-                        JoinDate = DateTime.UtcNow.AddYears(-1),
-                        ExpiryDate = DateTime.UtcNow.AddDays(-10),
-                        Status = MemberStatus.EXPIRED,
-                        LostBookCount = 1,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        status = BookStatus.OVERDUE;
+                        dueDate = DateTime.UtcNow.AddDays(-(i - 8));
+                        note = "Quá hạn trả sách";
                     }
-                };
-                foreach (var member in members)
-                    context.Members.Add(member);
-                context.SaveChanges();
 
-                var member1 = context.Members.First(m => m.MemberCode == "MB0001");
-                var member2 = context.Members.First(m => m.MemberCode == "MB0002");
-                var member3 = context.Members.First(m => m.MemberCode == "MB0003");
-
-                var cleanCode = context.Books.First(b => b.Isbn == "978-0132350884");
-                var designPatterns = context.Books.First(b => b.Isbn == "978-0201633610");
-                var nhaGiaKim = context.Books.First(b => b.Isbn == "978-6041098765");
-
-                var records = new List<BorrowRecord>
-                {
-                    new BorrowRecord
+                    // 20 - 25: Đã trả
+                    else
                     {
-                        MemberId = member1.Id,
-                        BookId = cleanCode.Id,
-                        BorrowDate = DateTime.UtcNow.AddDays(-10),
-                        DueDate = DateTime.UtcNow.AddDays(4),
-                        ReturnDate = null,
-                        Status = BookStatus.BORROWING,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new BorrowRecord
-                    {
-                        MemberId = member2.Id,
-                        BookId = designPatterns.Id,
-                        BorrowDate = DateTime.UtcNow.AddDays(-20),
-                        DueDate = DateTime.UtcNow.AddDays(-6),
-                        ReturnDate = null,
-                        Status = BookStatus.OVERDUE,
-                        Note = "Quá hạn trả sách",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new BorrowRecord
-                    {
-                        MemberId = member3.Id,
-                        BookId = nhaGiaKim.Id,
-                        BorrowDate = DateTime.UtcNow.AddDays(-30),
-                        DueDate = DateTime.UtcNow.AddDays(-16),
-                        ReturnDate = DateTime.UtcNow.AddDays(-18),
-                        Status = BookStatus.RETURNED,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        status = BookStatus.RETURNED;
+                        dueDate = borrowDate.AddDays(14);
+                        returnDate = dueDate.AddDays(i % 3);
                     }
-                };
-                foreach(var record in records)
-                    context.BorrowRecords.Add(record);
+
+                    records.Add(new BorrowRecord
+                    {
+                        MemberId = memberList[i % memberList.Count].Id,
+                        BookId = bookList[i % bookList.Count].Id,
+                        BorrowDate = borrowDate,
+                        DueDate = dueDate,
+                        ReturnDate = returnDate,
+                        Status = status,
+                        Note = note,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    });
+                }
+
+                context.BorrowRecords.AddRange(records);
                 context.SaveChanges();
 
-                var overdueRecord = context.BorrowRecords
-                .First(r => r.Status == BookStatus.OVERDUE);
-                var fines = new List<Fine>
+
+                // =========================================================
+                // 5. SEED FINE - 20 RECORDS
+                //    Tạo tiền phạt cho 20 lượt mượn quá hạn
+                // =========================================================
+
+                var overdueRecords = context.BorrowRecords
+                    .Where(r => r.Status == BookStatus.OVERDUE)
+                    .OrderBy(r => r.Id)
+                    .Take(20)
+                    .ToList();
+
+                var fines = new List<Fine>();
+
+                for (int i = 0; i < overdueRecords.Count; i++)
                 {
-                    new Fine
+                    fines.Add(new Fine
                     {
-                        BorrowRecordId = overdueRecord.Id,
-                        Amount = 50000m,
+                        BorrowRecordId = overdueRecords[i].Id,
+                        Amount = 20000m + (i * 5000m),
                         Reason = "Trả sách trễ hạn",
-                        IsPaid = false,
-                        PaidDate = null,
+                        IsPaid = i % 3 == 0,
+                        PaidDate = i % 3 == 0
+                            ? DateTime.UtcNow.AddDays(-(i % 10))
+                            : null,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    });
+                }
+
+                context.Fines.AddRange(fines);
+                context.SaveChanges();
+
+
+                // =========================================================
+                // 6. SEED USER
+                //    GIỮ NGUYÊN, KHÔNG THÊM USER MỚI
+                // =========================================================
+
+                var users = new List<User>
+                {
+                    new User
+                    {
+                        Username = "admin",
+                        PasswordHash = "$2a$11$vrFN/HSayqHwJcrtbRH2UObki3oWnmyAA1GuRTeExEjy.c/LKSz1u",
+                        FullName = "Admin",
+                        Email = "admin@gmail.com",
+                        Role = UseRole.ADMIN,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    },
+
+                    new User
+                    {
+                        Username = "library",
+                        PasswordHash = "$2a$11$3p6izJLWv4VcU0TagjDjwuykm.YsZ4ZjN9De9pUlFfjgn7Ex8DaEW",
+                        FullName = "Library",
+                        Email = "library@gmail.com",
+                        Role = UseRole.LIBRARIAN,
+                        IsActive = true,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
                     }
                 };
-                foreach( var fine in fines)
-                    context.Fines.Add(fine);
+
+                context.Users.AddRange(users);
                 context.SaveChanges();
             }
         }

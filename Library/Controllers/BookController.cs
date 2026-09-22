@@ -14,9 +14,25 @@ public class BookController : Controller
     }
 
     // GET: BOOKS
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var books = await _context.Books.Include(b => b.Category).ToListAsync();
+        var query = _context.Books
+                .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
+                .OrderByDescending(c => c.Id);
+
+        int totalItems = await query.CountAsync();
+
+        var books = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        ViewBag.Pagination = new PaginationViewModel
+        {
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalItems = totalItems
+        };
 
         return View(books);
     }
