@@ -1,0 +1,14 @@
+<testsuites>
+  <testsuite name="Library.Tests.dll" tests="1" skipped="0" failures="0" errors="0" time="0.002235" timestamp="2026-09-22T17:22:28" hostname="DESKTOP-AVB994A" id="0" package="Library.Tests.dll">
+    <properties />
+    <testcase classname="Library.Tests.UnitTest1" name="Test1" time="0.0022350" />
+    <system-out>
+Test Framework Informational Messages:
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.06]   Discovering: Library.Tests
+[xUnit.net 00:00:00.09]   Discovered:  Library.Tests
+[xUnit.net 00:00:00.11]   Starting:    Library.Tests
+[xUnit.net 00:00:00.15]   Finished:    Library.Tests
+</system-out>
+  </testsuite>
+</testsuites>

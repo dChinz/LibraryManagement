@@ -157,7 +157,8 @@
                                         <img src="@item.CoverImagePath"
                                              alt="@item.Title"
                                              class="book-cover"
-                                             title="@item.Title" />
+                                             title="@item.Title" 
+                                             style="max-width: 50px"/>
                                     }
                                     else
                                     {
@@ -235,12 +236,13 @@
             <strong>@Model.Count()</strong>
             sách
         </div>
+        @await Html.PartialAsync(
+            "_Pagination",
+            (PaginationViewModel)ViewBag.Pagination
+        )
     </div>
 </div>
-@await Html.PartialAsync(
-    "_Pagination",
-    (PaginationViewModel)ViewBag.Pagination
-)
+
 @section Scripts {
     <script>
         document.getElementById("searchBook").addEventListener("keyup", function () {

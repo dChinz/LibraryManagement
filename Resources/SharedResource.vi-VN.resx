@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DashboardTitle" xml:space="preserve"><value>Bảng điều khiển</value></data>
+  <data name="BookManagement" xml:space="preserve"><value>Quản lý sách</value></data>
+  <data name="Category" xml:space="preserve"><value>Thể loại</value></data>
+  <data name="Member" xml:space="preserve"><value>Độc giả</value></data>
+  <data name="BorrowRecord" xml:space="preserve"><value>Phiếu mượn</value></data>
+  <data name="Add" xml:space="preserve"><value>Thêm</value></data>
+  <data name="Edit" xml:space="preserve"><value>Sửa</value></data>
+  <data name="Delete" xml:space="preserve"><value>Xóa</value></data>
+  <data name="Search" xml:space="preserve"><value>Tìm kiếm</value></data>
+  <data name="Save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="Language" xml:space="preserve"><value>Ngôn ngữ</value></data>
+</root>

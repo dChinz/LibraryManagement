@@ -99,42 +99,8 @@ namespace Library.Controllers
                 .Include(b => b.Member)
                 .Include(b => b.Book)
                 .OrderByDescending(b => b.BorrowDate)
-                .Take(5)
+                .Take(7)
                 .ToListAsync();
-
-
-            // =========================
-            // TÍNH PHẦN TRĂM
-            // =========================
-
-            double availablePercent = 0;
-            double borrowingPercent = 0;
-            double overduePercent = 0;
-
-            if (totalBooks > 0)
-            {
-                availablePercent =
-                    Math.Round(
-                        availableBooks / totalBooks * 100,
-                        1
-                    );
-
-                borrowingPercent =
-                    Math.Round(
-                        (totalBooks - availableBooks)
-                        / totalBooks * 100,
-                        1
-                    );
-            }
-
-            if (borrowingCount > 0)
-            {
-                overduePercent =
-                    Math.Round(
-                        (double)overdueCount / borrowingCount * 100,
-                        1
-                    );
-            }
 
 
             // =========================
@@ -154,10 +120,6 @@ namespace Library.Controllers
             ViewBag.CategoryCount = categoryCount;
 
             ViewBag.MonthlyBorrowCount = monthlyBorrowCount;
-
-            ViewBag.AvailablePercent = availablePercent;
-            ViewBag.BorrowingPercent = borrowingPercent;
-            ViewBag.OverduePercent = overduePercent;
 
             ViewBag.RecentBorrows = recentBorrows;
 

@@ -15,31 +15,116 @@ public class BorrowRecordController : Controller
     }
 
     // GET: BORROWRECORDS
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(int borrowPage = 1, int returnedPage = 1, int pageSize = 10)
     {
-        var query = _context.BorrowRecords
-                .Include(b => b.Member)
-                .Include(b => b.Book)
-                .OrderByDescending(b => b.Id);
+        if (borrowPage < 1)
+            borrowPage = 1;
 
-        int totalItems = await query.CountAsync();
+        if (returnedPage < 1)
+            returnedPage = 1;
 
-        var borrow = await query
-            .Skip((page - 1) * pageSize)
+        if (pageSize < 1)
+            pageSize = 10;
+
+        // ==========================================
+        // ĐANG MƯỢN + QUÁ HẠN
+        // ==========================================
+
+        var borrowingQuery = _context.BorrowRecords
+            .Include(b => b.Member)
+            .Include(b => b.Book)
+            .Where(b =>
+                b.Status.ToString() == "BORROWING" ||
+                b.Status.ToString() == "OVERDUE")
+            .OrderByDescending(b => b.Id);
+
+        var borrowingTotalItems = await borrowingQuery.CountAsync();
+
+        var borrowingTotalPages = (int)Math.Ceiling(
+            (double)borrowingTotalItems / pageSize
+        );
+
+        if (borrowingTotalPages > 0 && borrowPage > borrowingTotalPages)
+        {
+            borrowPage = borrowingTotalPages;
+        }
+
+        var borrowingRecords = await borrowingQuery
+            .Skip((borrowPage - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
-        ViewBag.Pagination = new PaginationViewModel
+
+        // ==========================================
+        // ĐÃ TRẢ
+        // ==========================================
+
+        var returnedQuery = _context.BorrowRecords
+            .Include(b => b.Member)
+            .Include(b => b.Book)
+            .Where(b => b.Status.ToString() == "RETURNED")
+            .OrderByDescending(b => b.Id);
+
+        var returnedTotalItems = await returnedQuery.CountAsync();
+
+        var returnedTotalPages = (int)Math.Ceiling(
+            (double)returnedTotalItems / pageSize
+        );
+
+        if (returnedTotalPages > 0 && returnedPage > returnedTotalPages)
         {
-            CurrentPage = page,
+            returnedPage = returnedTotalPages;
+        }
+
+        var returnedRecords = await returnedQuery
+            .Skip((returnedPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+
+        // ==========================================
+        // PAGINATION ĐANG MƯỢN
+        // ==========================================
+
+        ViewBag.BorrowingPagination = new PaginationViewModel
+        {
+            CurrentPage = borrowPage,
             PageSize = pageSize,
-            TotalItems = totalItems
+            TotalItems = borrowingTotalItems,
+            PageParameter = "borrowPage",
+
+            RouteValues = new Dictionary<string, string?>
+            {
+                ["returnedPage"] = returnedPage.ToString()
+            }
         };
 
-        return View(borrow);
+
+        // ==========================================
+        // PAGINATION ĐÃ TRẢ
+        // ==========================================
+
+        ViewBag.ReturnedPagination = new PaginationViewModel
+        {
+            CurrentPage = returnedPage,
+            PageSize = pageSize,
+            TotalItems = returnedTotalItems,
+            PageParameter = "returnedPage",
+
+            RouteValues = new Dictionary<string, string?>
+            {
+                ["borrowPage"] = borrowPage.ToString()
+            }
+        };
+
+
+        // Truyền 2 danh sách sang View
+        ViewBag.BorrowingRecords = borrowingRecords;
+        ViewBag.ReturnedRecords = returnedRecords;
+
+        return View();
     }
 
-    // GET: BORROWRECORDS/Details/5
     // GET: BORROWRECORDS/Details/5
     public async Task<IActionResult> Details(int? id)
     {
@@ -65,20 +150,21 @@ public class BorrowRecordController : Controller
     public async Task<IActionResult> Create()
     {
         var members = await _context.Members
-            .Where(m => m.DeletedAt == default(DateTime) || m.DeletedAt == null)
+            .Where(m => m.DeletedAt == null && m.Status == MemberStatus.ACTIVE)
             .OrderBy(m => m.FullName)
             .Select(m => new
             {
                 m.Id,
-                DisplayName = m.MemberCode + " - " + m.FullName
+                m.MemberCode,
+                m.FullName,
+                m.Email,
+                m.Phone,
+                m.Address,
+                m.Status
             })
             .ToListAsync();
 
-        ViewData["MemberId"] = new SelectList(
-            members,
-            "Id",
-            "DisplayName"
-        );
+        ViewBag.Members = members;
 
         var books = await _context.Books
             .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
@@ -100,7 +186,9 @@ public class BorrowRecordController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(BorrowRecord borrowrecord, List<int> BookIds)
+    public async Task<IActionResult> Create(
+    BorrowRecord borrowrecord,
+    List<int> BookIds)
     {
         var members = await _context.Members
             .Where(m => m.DeletedAt == default(DateTime) || m.DeletedAt == null)
@@ -108,16 +196,16 @@ public class BorrowRecordController : Controller
             .Select(m => new
             {
                 m.Id,
-                DisplayName = m.MemberCode + " - " + m.FullName
+                m.MemberCode,
+                m.FullName,
+                m.Email,
+                m.Phone,
+                m.Address,
+                m.Status
             })
             .ToListAsync();
 
-        ViewData["MemberId"] = new SelectList(
-            members,
-            "Id",
-            "DisplayName",
-            borrowrecord.MemberId
-        );
+        ViewBag.Members = members;
 
         var books = await _context.Books
             .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
@@ -131,12 +219,14 @@ public class BorrowRecordController : Controller
 
         ViewBag.Books = books;
 
-        // BookId không còn được nhập trực tiếp từ form
         ModelState.Remove("BookId");
 
         if (BookIds == null || BookIds.Count == 0)
         {
-            ModelState.AddModelError("BookIds", "Vui lòng chọn ít nhất một cuốn sách.");
+            ModelState.AddModelError(
+                "BookIds",
+                "Vui lòng chọn ít nhất một cuốn sách."
+            );
         }
 
         if (ModelState.IsValid)

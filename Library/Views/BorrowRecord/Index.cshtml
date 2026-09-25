@@ -1,14 +1,22 @@
 @model IEnumerable<Library.Models.BorrowRecord>
-
 @{
     ViewData["Title"] = "Quản lý mượn sách";
-}
 
+    var borrowingRecords =
+        ViewBag.BorrowingRecords as List<Library.Models.BorrowRecord>
+        ?? new List<Library.Models.BorrowRecord>();
+
+    var returnedRecords =
+        ViewBag.ReturnedRecords as List<Library.Models.BorrowRecord>
+        ?? new List<Library.Models.BorrowRecord>();
+}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="mb-1">Quản lý mượn sách</h1>
-            <p class="text-muted mb-0">Quản lý thông tin mượn và trả sách trong thư viện</p>
+            <p class="text-muted mb-0">
+                Quản lý thông tin mượn và trả sách trong thư viện
+            </p>
         </div>
 
         <div>
@@ -28,7 +36,7 @@
                 </h3>
 
                 <span class="badge text-bg-primary">
-                    @Model.Count() lượt mượn
+                    @(borrowingRecords.Count + returnedRecords.Count) lượt mượn
                 </span>
             </div>
         </div>
@@ -50,8 +58,25 @@
             </div>
         </div>
 
+        <!-- ========================= -->
+        <!-- ĐANG MƯỢN + QUÁ HẠN -->
+        <!-- ========================= -->
+
+        <div class="card-header border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-book-half me-2"></i>
+                    Đang mượn / Quá hạn
+                </h4>
+
+                <span class="badge text-bg-warning">
+                    @borrowingRecords.Count lượt
+                </span>
+            </div>
+        </div>
+
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle mb-0" id="borrowTable">
+            <table class="table table-bordered table-hover align-middle mb-0 borrow-table">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 60px;">#</th>
@@ -67,9 +92,9 @@
                 </thead>
 
                 <tbody>
-                    @if (Model != null && Model.Any())
+                    @if (borrowingRecords.Any())
                     {
-                        @foreach (var item in Model)
+                        @foreach (var item in borrowingRecords)
                         {
                             <tr>
                                 <td>
@@ -119,24 +144,11 @@
                                             Đang mượn
                                         </span>
                                     }
-                                    else if (item.Status.ToString() == "RETURNED")
-                                    {
-                                        <span class="badge text-bg-success">
-                                            <i class="bi bi-check-circle me-1"></i>
-                                            Đã trả
-                                        </span>
-                                    }
                                     else if (item.Status.ToString() == "OVERDUE")
                                     {
                                         <span class="badge text-bg-danger">
                                             <i class="bi bi-exclamation-triangle me-1"></i>
                                             Quá hạn
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge text-bg-secondary">
-                                            @item.Status
                                         </span>
                                     }
                                 </td>
@@ -183,13 +195,13 @@
                     }
                     else
                     {
-                        <tr>
+                        <tr class="empty-row">
                             <td colspan="9" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="bi bi-journal-x fs-1"></i>
 
                                     <p class="mt-3 mb-0">
-                                        Chưa có lượt mượn nào
+                                        Không có sách đang mượn hoặc quá hạn
                                     </p>
                                 </div>
                             </td>
@@ -198,27 +210,186 @@
                 </tbody>
             </table>
         </div>
+        <div class="p-3">
+            @await Html.PartialAsync(
+                "_Pagination",
+                (PaginationViewModel)ViewBag.BorrowingPagination
+            )
+        </div>
 
+        <!-- ========================= -->
+        <!-- ĐÃ TRẢ -->
+        <!-- ========================= -->
+
+        <div class="card-header border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Đã trả
+                </h4>
+
+                <span class="badge text-bg-success">
+                    @returnedRecords.Count lượt
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 borrow-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>Độc giả</th>
+                        <th>Sách</th>
+                        <th>Ngày mượn</th>
+                        <th>Hạn trả</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th>Ghi chú</th>
+                        <th style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (returnedRecords.Any())
+                    {
+                        @foreach (var item in returnedRecords)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Id
+                                </td>
+
+                                <td>
+                                    <span class="badge text-bg-secondary">
+                                        <i class="bi bi-person me-1"></i>
+                                        @item.Member?.FullName
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge text-bg-info">
+                                        <i class="bi bi-book me-1"></i>
+                                        @item.Book?.Title
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @item.BorrowDate.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @item.DueDate.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @if (item.ReturnDate.HasValue)
+                                    {
+                                        @item.ReturnDate.Value.ToString("dd/MM/yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa trả
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <span class="badge text-bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Đã trả
+                                    </span>
+                                </td>
+
+                                <td class="note-column" title="@item.Note">
+                                    @if (!string.IsNullOrWhiteSpace(item.Note))
+                                    {
+                                        @item.Note
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Không có
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-info"
+                                           title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-warning"
+                                           title="Chỉnh sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-danger"
+                                           title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr class="empty-row">
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-journal-check fs-1"></i>
+
+                                    <p class="mt-3 mb-0">
+                                        Chưa có lượt mượn nào đã trả
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
         <div class="card-footer text-muted">
             Tổng số:
-            <strong>@Model.Count()</strong>
+            <strong>@(borrowingRecords.Count + returnedRecords.Count)</strong>
             lượt mượn
+        </div>
+        <div class="p-3">
+            @await Html.PartialAsync(
+                "_Pagination",
+                (PaginationViewModel)ViewBag.ReturnedPagination
+            )
         </div>
     </div>
 </div>
-@await Html.PartialAsync(
-    "_Pagination",
-    (PaginationViewModel)ViewBag.Pagination
-)
+
 @section Scripts {
     <script>
         document.getElementById("searchBorrow").addEventListener("keyup", function () {
-            const keyword = this.value.toLowerCase();
-            const rows = document.querySelectorAll("#borrowTable tbody tr");
+            const keyword = this.value.toLowerCase().trim();
 
-            rows.forEach(function (row) {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(keyword) ? "" : "none";
+            const tables = document.querySelectorAll(".borrow-table");
+
+            tables.forEach(function (table) {
+                const rows = table.querySelectorAll("tbody tr:not(.empty-row)");
+
+                rows.forEach(function (row) {
+                    const text = row.textContent.toLowerCase();
+
+                    row.style.display = text.includes(keyword)
+                        ? ""
+                        : "none";
+                });
             });
         });
     </script>

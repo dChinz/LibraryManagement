@@ -250,12 +250,13 @@
                 </a>
             </div>
         }
+        @await Html.PartialAsync(
+            "_Pagination",
+            (PaginationViewModel)ViewBag.Pagination
+        )
     </div>
 </div>
-@await Html.PartialAsync(
-    "_Pagination",
-    (PaginationViewModel)ViewBag.Pagination
-)
+
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {

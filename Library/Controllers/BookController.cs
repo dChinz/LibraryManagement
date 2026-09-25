@@ -8,21 +8,55 @@ public class BookController : Controller
 {
     private readonly LibraryContext _context;
 
+    private int pageSize = 10;
+
     public BookController(LibraryContext context)
     {
         _context = context;
     }
 
     // GET: BOOKS
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    // GET: BOOKS
+    public async Task<IActionResult> Index(
+        int page = 1,
+        int pageSize = 10,
+        int? mid = null)
     {
-        var query = _context.Books
-                .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
-                .OrderByDescending(c => c.Id);
+        if (page < 1)
+        {
+            page = 1;
+        }
 
-        int totalItems = await query.CountAsync();
+        if (pageSize < 1)
+        {
+            pageSize = 10;
+        }
 
-        var books = await query
+        var booksQuery = _context.Books
+            .Include(b => b.Category)
+            .Where(b => b.DeletedAt == null);
+
+        if (mid.HasValue)
+        {
+            booksQuery = booksQuery
+                .Where(b => b.CategoryId == mid.Value);
+        }
+
+        booksQuery = booksQuery
+            .OrderByDescending(b => b.Id);
+
+        var totalItems = await booksQuery.CountAsync();
+
+        var totalPages = (int)Math.Ceiling(
+            (double)totalItems / pageSize
+        );
+
+        if (totalPages > 0 && page > totalPages)
+        {
+            page = totalPages;
+        }
+
+        var books = await booksQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -33,6 +67,8 @@ public class BookController : Controller
             PageSize = pageSize,
             TotalItems = totalItems
         };
+
+        ViewBag.mid = mid;
 
         return View(books);
     }
@@ -72,6 +108,29 @@ public class BookController : Controller
     {
         if (ModelState.IsValid)
         {
+            if (book.CoverImage != null && book.CoverImage.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() +
+                               Path.GetExtension(book.CoverImage.FileName);
+
+                var folderPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "images",
+                    "books");
+
+                Directory.CreateDirectory(folderPath);
+
+                var filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await book.CoverImage.CopyToAsync(stream);
+                }
+
+                book.CoverImagePath = "/images/books/" + fileName;
+            }
+
             book.CreatedAt = DateTime.Now;
             book.UpdatedAt = DateTime.Now;
             book.DeletedAt = default(DateTime);
@@ -116,6 +175,29 @@ public class BookController : Controller
         {
             try
             {
+                if (book.CoverImage != null && book.CoverImage.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString()
+                        + Path.GetExtension(book.CoverImage.FileName);
+
+                    var folderPath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "images",
+                        "books");
+
+                    Directory.CreateDirectory(folderPath);
+
+                    var filePath = Path.Combine(folderPath, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await book.CoverImage.CopyToAsync(stream);
+                    }
+
+                    book.CoverImagePath = "/images/books/" + fileName;
+                }
+
                 book.UpdatedAt = DateTime.Now;
 
                 _context.Update(book);

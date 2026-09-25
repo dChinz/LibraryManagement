@@ -1,7 +1,7 @@
 @model Library.Models.Book
 
 @{
-    ViewData["Title"] = "Thêm sách";
+    ViewData["Title"] = "Chỉnh sửa sách";
 }
 
 <div class="container-fluid">
@@ -10,6 +10,7 @@
             <h1 class="mb-1">Chỉnh sửa sách</h1>
             <p class="text-muted mb-0">Cập nhật thông tin của sách</p>
         </div>
+
         <div>
             <a asp-action="Index" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i>
@@ -18,11 +19,17 @@
         </div>
     </div>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post"
+          enctype="multipart/form-data">
+
         @Html.AntiForgeryToken()
 
         <div class="row">
+
             <div class="col-lg-8">
+
                 <!-- Thông tin sách -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -33,47 +40,88 @@
                     </div>
 
                     <div class="card-body">
-                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger"
+                             role="alert"></div>
+
+                        <input type="hidden" asp-for="Id" />
 
                         <div class="mb-4">
                             <label asp-for="Title" class="form-label">
                                 Tên sách <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="Title" class="form-control" placeholder="Ví dụ: Thiên tài bên trái, kẻ điên bên phải" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                            <div class="form-text">Nhập tên sách</div>
+
+                            <input asp-for="Title"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Thiên tài bên trái, kẻ điên bên phải" />
+
+                            <span asp-validation-for="Title"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Nhập tên sách
+                            </div>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="Isbn" class="form-label">
                                 ISBN <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="Isbn" class="form-control" placeholder="Ví dụ: 978-0132350884" />
-                            <span asp-validation-for="Isbn" class="text-danger"></span>
-                            <div class="form-text">Nhập mã ISBN của sách</div>
+
+                            <input asp-for="Isbn"
+                                   class="form-control"
+                                   placeholder="Ví dụ: 978-0132350884" />
+
+                            <span asp-validation-for="Isbn"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Nhập mã ISBN của sách
+                            </div>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="Author" class="form-label">
                                 Tác giả <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="Author" class="form-control" placeholder="Ví dụ: Erich Gamma, Richard Helm" />
-                            <span asp-validation-for="Author" class="text-danger"></span>
-                            <div class="form-text">Nhập tên tác giả</div>
+
+                            <input asp-for="Author"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Erich Gamma, Richard Helm" />
+
+                            <span asp-validation-for="Author"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Nhập tên tác giả
+                            </div>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="CategoryId" class="form-label">
                                 Thể loại <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
-                                <option value="">-- Chọn thể loại --</option>
+
+                            <select asp-for="CategoryId"
+                                    class="form-select"
+                                    asp-items="ViewBag.CategoryId">
+                                <option value="">
+                                    -- Chọn thể loại --
+                                </option>
                             </select>
-                            <span asp-validation-for="CategoryId" class="text-danger"></span>
-                            <div class="form-text">Chọn thể loại cho sách</div>
+
+                            <span asp-validation-for="CategoryId"
+                                  class="text-danger"></span>
+
+                            <div class="form-text">
+                                Chọn thể loại cho sách
+                            </div>
                         </div>
+
                     </div>
                 </div>
+
 
                 <!-- Thông tin xuất bản -->
                 <div class="card mb-4">
@@ -85,19 +133,38 @@
                     </div>
 
                     <div class="card-body">
+
                         <div class="mb-4">
-                            <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
-                            <input asp-for="Publisher" class="form-control" placeholder="Ví dụ: Nhà xuất bản Giáo dục" />
-                            <span asp-validation-for="Publisher" class="text-danger"></span>
+                            <label asp-for="Publisher"
+                                   class="form-label">
+                                Nhà xuất bản
+                            </label>
+
+                            <input asp-for="Publisher"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Nhà xuất bản Giáo dục" />
+
+                            <span asp-validation-for="Publisher"
+                                  class="text-danger"></span>
                         </div>
 
                         <div class="mb-4">
-                            <label asp-for="PublishYear" class="form-label">Năm xuất bản</label>
-                            <input asp-for="PublishYear" class="form-control" placeholder="Ví dụ: 2025" />
-                            <span asp-validation-for="PublishYear" class="text-danger"></span>
+                            <label asp-for="PublishYear"
+                                   class="form-label">
+                                Năm xuất bản
+                            </label>
+
+                            <input asp-for="PublishYear"
+                                   class="form-control"
+                                   placeholder="Ví dụ: 2025" />
+
+                            <span asp-validation-for="PublishYear"
+                                  class="text-danger"></span>
                         </div>
+
                     </div>
                 </div>
+
 
                 <!-- Mô tả -->
                 <div class="card mb-4">
@@ -109,18 +176,30 @@
                     </div>
 
                     <div class="card-body">
+
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">
+                            <label asp-for="Description"
+                                   class="form-label">
                                 Mô tả sách
                             </label>
-                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Nhập mô tả về nội dung của sách"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Nhập mô tả về nội dung của sách"></textarea>
+
+                            <span asp-validation-for="Description"
+                                  class="text-danger"></span>
                         </div>
+
                     </div>
                 </div>
+
             </div>
 
+
             <div class="col-lg-4">
+
                 <!-- Quản lý kho -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -131,23 +210,40 @@
                     </div>
 
                     <div class="card-body">
+
                         <div class="mb-4">
-                            <label asp-for="TotalCopies" class="form-label">
-                                Tổng số lượng <span class="text-danger">*</span>
+                            <label asp-for="TotalCopies"
+                                   class="form-label">
+                                Tổng số lượng
+                                <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="TotalCopies" class="form-control" placeholder="Ví dụ: 100" />
-                            <span asp-validation-for="TotalCopies" class="text-danger"></span>
+
+                            <input asp-for="TotalCopies"
+                                   class="form-control"
+                                   placeholder="Ví dụ: 100" />
+
+                            <span asp-validation-for="TotalCopies"
+                                  class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="AvailableCopies" class="form-label">
-                                Số lượng có sẵn <span class="text-danger">*</span>
+                            <label asp-for="AvailableCopies"
+                                   class="form-label">
+                                Số lượng có sẵn
+                                <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="AvailableCopies" class="form-control" placeholder="Ví dụ: 100" />
-                            <span asp-validation-for="AvailableCopies" class="text-danger"></span>
+
+                            <input asp-for="AvailableCopies"
+                                   class="form-control"
+                                   placeholder="Ví dụ: 100" />
+
+                            <span asp-validation-for="AvailableCopies"
+                                  class="text-danger"></span>
                         </div>
+
                     </div>
                 </div>
+
 
                 <!-- Ảnh bìa -->
                 <div class="card mb-4">
@@ -159,33 +255,72 @@
                     </div>
 
                     <div class="card-body">
+
+                        @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Ảnh hiện tại
+                                </label>
+
+                                <div>
+                                    <img src="@Model.CoverImagePath"
+                                         alt="@Model.Title"
+                                         class="img-thumbnail"
+                                         style="max-width: 180px; max-height: 250px; object-fit: cover;" />
+                                </div>
+                            </div>
+                        }
+
                         <div class="mb-3">
-                            <label asp-for="CoverImagePath" class="form-label">Đường dẫn ảnh</label>
-                            <input asp-for="CoverImagePath" class="form-control" placeholder="Ví dụ: /images/books/book-01.jpg" />
-                            <span asp-validation-for="CoverImagePath" class="text-danger"></span>
-                            <div class="form-text">Nhập đường dẫn đến ảnh bìa sách</div>
+                            <label for="CoverImage"
+                                   class="form-label">
+                                Chọn ảnh mới
+                            </label>
+
+                            <input type="file"
+                                   id="CoverImage"
+                                   name="CoverImage"
+                                   class="form-control"
+                                   accept="image/jpeg,image/png,image/webp" />
+
+                            <div class="form-text">
+                                Chọn ảnh JPG, JPEG, PNG hoặc WEBP.
+                                Nếu không chọn, ảnh hiện tại sẽ được giữ nguyên.
+                            </div>
                         </div>
+
                     </div>
                 </div>
+
 
                 <!-- Nút -->
                 <div class="card">
                     <div class="card-body">
+
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-1"></i>
-                                Thêm sách
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>
+                                Lưu thay đổi
                             </button>
 
-                            <a asp-action="Index" class="btn btn-secondary">
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
                                 <i class="bi bi-x-circle me-1"></i>
                                 Hủy
                             </a>
+
                         </div>
+
                     </div>
                 </div>
+
             </div>
+
         </div>
+
     </form>
 </div>
 

@@ -54,14 +54,96 @@
                             <select asp-for="MemberId"
                                     id="memberSelect"
                                     class="form-select"
-                                    asp-items="ViewBag.MemberId"
                                     size="5">
+
+                                @foreach (var member in ViewBag.Members)
+                                {
+                                    <option value="@member.Id"
+                                            data-code="@member.MemberCode"
+                                            data-name="@member.FullName"
+                                            data-email="@member.Email"
+                                            data-phone="@member.Phone"
+                                            data-address="@member.Address"
+                                            data-status="@member.Status">
+                                        @member.MemberCode - @member.FullName
+                                    </option>
+                                }
+
                             </select>
 
                             <span asp-validation-for="MemberId" class="text-danger"></span>
 
                             <div class="form-text">
                                 Nhập tên hoặc mã độc giả để tìm kiếm, sau đó chọn độc giả trong danh sách.
+                            </div>
+                            <div id="memberInfo"
+                                 class="card border-primary mt-3"
+                                 style="display: none;">
+
+                                <div class="card-header bg-primary text-white">
+                                    <i class="bi bi-person-vcard me-1"></i>
+                                    Thông tin độc giả
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="row g-3">
+
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">
+                                                Mã độc giả
+                                            </div>
+                                            <div id="memberCode" class="fw-semibold">
+                                                -
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">
+                                                Họ và tên
+                                            </div>
+                                            <div id="memberName" class="fw-semibold">
+                                                -
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">
+                                                Email
+                                            </div>
+                                            <div id="memberEmail">
+                                                -
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">
+                                                Số điện thoại
+                                            </div>
+                                            <div id="memberPhone">
+                                                -
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="text-muted small">
+                                                Địa chỉ
+                                            </div>
+                                            <div id="memberAddress">
+                                                -
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="text-muted small">
+                                                Trạng thái
+                                            </div>
+                                            <span id="memberStatus" class="badge text-bg-secondary">
+                                                -
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -97,7 +179,7 @@
                             <span class="text-danger" id="bookError"></span>
 
                             <div class="form-text">
-                                Có thể chọn nhiều sách. Giữ Ctrl để chọn nhiều sách.
+                                Click vào sách để chọn hoặc bỏ chọn. Sách đã chọn sẽ được đưa lên đầu danh sách.
                             </div>
                         </div>
 
@@ -243,33 +325,165 @@
     }
 
     <script>
-        document.getElementById("memberSearch").addEventListener("input", function () {
-            const keyword = this.value.toLowerCase().trim();
-            const select = document.getElementById("memberSelect");
-            const options = select.querySelectorAll("option");
+    // =========================
+    // TÌM KIẾM ĐỘC GIẢ
+    // =========================
+    document.getElementById("memberSearch").addEventListener("input", function () {
+        const keyword = this.value.toLowerCase().trim();
+        const select = document.getElementById("memberSelect");
+        const options = Array.from(select.querySelectorAll("option"));
 
-            options.forEach(function (option) {
-                if (option.value === "") {
-                    option.style.display = "";
-                    return;
-                }
+        options.forEach(function (option) {
+            if (option.value === "") {
+                option.style.display = "";
+                return;
+            }
 
-                const text = option.textContent.toLowerCase();
+            const text = option.textContent.toLowerCase();
+            option.style.display = text.includes(keyword) ? "" : "none";
+        });
+    });
+    const memberSelect = document.getElementById("memberSelect");
+    const memberInfo = document.getElementById("memberInfo");
+    const memberCode = document.getElementById("memberCode");
+    const memberName = document.getElementById("memberName");
+    const memberEmail = document.getElementById("memberEmail");
+    const memberPhone = document.getElementById("memberPhone");
+    const memberAddress = document.getElementById("memberAddress");
+    const memberStatus = document.getElementById("memberStatus");
 
-                option.style.display = text.includes(keyword) ? "" : "none";
-            });
+
+    memberSelect.addEventListener("change", function () {
+
+        const selectedOption = this.options[this.selectedIndex];
+
+        if (!selectedOption || !selectedOption.value) {
+            memberInfo.style.display = "none";
+            return;
+        }
+
+        memberCode.textContent =
+            selectedOption.dataset.code || "-";
+
+        memberName.textContent =
+            selectedOption.dataset.name || "-";
+
+        memberEmail.textContent =
+            selectedOption.dataset.email || "-";
+
+        memberPhone.textContent =
+            selectedOption.dataset.phone || "-";
+
+        memberAddress.textContent =
+            selectedOption.dataset.address || "-";
+
+        const status = selectedOption.dataset.status || "";
+
+        memberStatus.textContent = status;
+
+        // Đổi màu trạng thái
+        memberStatus.className = "badge";
+
+        if (status === "ACTIVE") {
+            memberStatus.classList.add("text-bg-success");
+            memberStatus.textContent = "Đang hoạt động";
+        }
+        else if (status === "EXPIRED") {
+            memberStatus.classList.add("text-bg-danger");
+            memberStatus.textContent = "Hết hạn";
+        }
+        else {
+            memberStatus.classList.add("text-bg-secondary");
+        }
+
+        memberInfo.style.display = "block";
+    });
+
+
+    // =========================
+    // SÁCH
+    // =========================
+    const bookSearch = document.getElementById("bookSearch");
+    const bookSelect = document.getElementById("bookSelect");
+
+
+    // Click sách -> chọn / bỏ chọn
+    bookSelect.addEventListener("mousedown", function (event) {
+        const option = event.target;
+
+        if (option.tagName !== "OPTION") {
+            return;
+        }
+
+        event.preventDefault();
+
+        option.selected = !option.selected;
+
+        moveSelectedBooksToTop();
+    });
+
+
+    // Đưa sách đã chọn lên đầu danh sách
+    function moveSelectedBooksToTop() {
+        const options = Array.from(bookSelect.options);
+
+        const selected = options.filter(function (option) {
+            return option.selected;
         });
 
-        document.getElementById("bookSearch").addEventListener("input", function () {
-            const keyword = this.value.toLowerCase().trim();
-            const select = document.getElementById("bookSelect");
-            const options = select.querySelectorAll("option");
-
-            options.forEach(function (option) {
-                const text = option.textContent.toLowerCase();
-
-                option.style.display = text.includes(keyword) ? "" : "none";
-            });
+        const unselected = options.filter(function (option) {
+            return !option.selected;
         });
-    </script>
+
+        bookSelect.innerHTML = "";
+
+        selected.forEach(function (option) {
+            bookSelect.appendChild(option);
+        });
+
+        unselected.forEach(function (option) {
+            bookSelect.appendChild(option);
+        });
+    }
+
+
+    // Tìm kiếm sách
+    bookSearch.addEventListener("input", function () {
+        const keyword = this.value.toLowerCase().trim();
+        const options = Array.from(bookSelect.options);
+
+        options.forEach(function (option) {
+            const text = option.textContent.toLowerCase();
+
+            // Sách đã chọn luôn hiển thị
+            if (option.selected) {
+                option.style.display = "";
+                return;
+            }
+
+            // Sách chưa chọn thì lọc theo từ khóa
+            option.style.display = text.includes(keyword)
+                ? ""
+                : "none";
+        });
+    });
+
+
+    // Khi submit, kiểm tra đã chọn sách chưa
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const selectedBooks = Array.from(bookSelect.selectedOptions);
+
+        if (selectedBooks.length === 0) {
+            event.preventDefault();
+
+            document.getElementById("bookError").textContent =
+                "Vui lòng chọn ít nhất một cuốn sách.";
+
+            bookSelect.focus();
+            return;
+        }
+
+        document.getElementById("bookError").textContent = "";
+    });
+</script>
 }

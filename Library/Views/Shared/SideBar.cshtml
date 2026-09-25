@@ -1,0 +1,106 @@
+﻿<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+        <a asp-controller="Home" asp-action="Index" class="brand-link">
+            <span class="brand-text fw-light">
+                📚 Library Management
+            </span>
+        </a>
+    </div>
+
+    <div class="sidebar-wrapper">
+        <nav class="mt-2" aria-label="Main navigation">
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false" id="navigation"> 
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-speedometer2"></i>
+                        <p>
+                            @Localizer["DashboardTitle"]
+                        </p>
+                    </a>
+                </li>
+                <!-- BOOKS -->
+                <li class="nav-item">
+                    <a asp-controller="Book"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-book"></i>
+                        <p>
+                            Quản lý sách
+                        </p>
+                    </a>
+                </li>
+                <!-- MEMBERS -->
+                <li class="nav-item">
+                    <a asp-controller="Member"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-people"></i>
+                        <p>
+                            Độc giả
+                        </p>
+                    </a>
+                </li>
+                <!-- BORROW -->
+                <li class="nav-item">
+                    <a asp-controller="BorrowRecord"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-arrow-left-right"></i>
+                        <p>
+                            Mượn / trả sách
+                        </p>
+                    </a>
+                </li>
+                <!-- CATEGORY -->
+                <li class="nav-item">
+                    <a asp-controller="Category"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-tags"></i>
+                        <p>
+                            Thể loại
+                        </p>
+                    </a>
+                </li>
+                <!-- FINE -->
+                <li class="nav-item">
+                    <a asp-controller="Fine"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-cash-coin"></i>
+                        <p>
+                            Tiền phạt
+                        </p>
+                    </a>
+                </li>
+                <!-- REPORT -->
+                <li class="nav-item">
+                    <a asp-controller="Report"
+                       asp-action="Index"
+                       class="nav-link">
+                        <i class="nav-icon bi bi-bar-chart"></i>
+                        <p>
+                            Báo cáo
+                        </p>
+                    </a>
+                </li>
+                @if (User.IsInRole("ADMIN"))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="User"
+                           asp-action="Index"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-people"></i>
+                            <p>
+                                Người dùng
+                            </p>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</aside>

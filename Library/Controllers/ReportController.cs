@@ -50,8 +50,14 @@ namespace Library.Controllers
 
             var activeMembers = await _context.Members
                 .Where(m =>
-                    m.DeletedAt == default(DateTime) &&
+                    m.DeletedAt == null &&
                     m.Status == Library.Models.MemberStatus.ACTIVE)
+                .CountAsync();
+
+            var expiryMembers = await _context.Members
+                .Where(m =>
+                    m.DeletedAt == null &&
+                    m.Status == Library.Models.MemberStatus.EXPIRED)
                 .CountAsync();
 
 
@@ -114,11 +120,11 @@ namespace Library.Controllers
                 .SumAsync(f => (decimal?)f.Amount) ?? 0;
 
             var paidFines = await _context.Fines
-                .Where(f => f.IsPaid)
+                .Where(f => !f.IsPaid)
                 .SumAsync(f => (decimal?)f.Amount) ?? 0;
 
             var unpaidFines = await _context.Fines
-                .Where(f => !f.IsPaid)
+                .Where(f => f.IsPaid)
                 .SumAsync(f => (decimal?)f.Amount) ?? 0;
 
 
@@ -133,6 +139,7 @@ namespace Library.Controllers
 
             ViewBag.TotalMembers = totalMembers;
             ViewBag.ActiveMembers = activeMembers;
+            ViewBag.ExpiryMembers = expiryMembers;
 
             ViewBag.OverdueBooks = overdueBooks;
 
