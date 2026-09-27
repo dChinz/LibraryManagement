@@ -63,6 +63,20 @@ namespace Library.Controllers
 
 
             // =========================
+            // TỶ LỆ SÁCH
+            // =========================
+
+            var availablePercent = totalBooks > 0
+                ? Math.Round((availableBooks / totalBooks) * 100, 1) : 0;
+
+            var borrowingPercent = totalBooks > 0
+                ? Math.Round((borrowingCount / totalBooks) * 100, 1) : 0;
+
+            var overduePercent = totalBooks > 0
+                ? Math.Round((overdueCount / totalBooks) * 100, 1) : 0;
+
+
+            // =========================
             // THỂ LOẠI
             // =========================
 
@@ -116,6 +130,10 @@ namespace Library.Controllers
 
             ViewBag.BorrowingCount = borrowingCount;
             ViewBag.OverdueCount = overdueCount;
+
+            ViewBag.AvailablePercent = availablePercent;
+            ViewBag.BorrowingPercent = borrowingPercent;
+            ViewBag.OverduePercent = overduePercent;
 
             ViewBag.CategoryCount = categoryCount;
 

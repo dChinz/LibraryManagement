@@ -167,7 +167,7 @@ public class BorrowRecordController : Controller
         ViewBag.Members = members;
 
         var books = await _context.Books
-            .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
+            .Where(b => b.DeletedAt == null && b.AvailableCopies != 0)
             .OrderBy(b => b.Title)
             .Select(b => new
             {
@@ -190,6 +190,10 @@ public class BorrowRecordController : Controller
     BorrowRecord borrowrecord,
     List<int> BookIds)
     {
+        // =========================
+        // LOAD MEMBERS
+        // =========================
+
         var members = await _context.Members
             .Where(m => m.DeletedAt == default(DateTime) || m.DeletedAt == null)
             .OrderBy(m => m.FullName)
@@ -207,6 +211,11 @@ public class BorrowRecordController : Controller
 
         ViewBag.Members = members;
 
+
+        // =========================
+        // LOAD BOOKS
+        // =========================
+
         var books = await _context.Books
             .Where(b => b.DeletedAt == default(DateTime) || b.DeletedAt == null)
             .OrderBy(b => b.Title)
@@ -219,6 +228,11 @@ public class BorrowRecordController : Controller
 
         ViewBag.Books = books;
 
+
+        // =========================
+        // VALIDATE BOOK IDS
+        // =========================
+
         ModelState.Remove("BookId");
 
         if (BookIds == null || BookIds.Count == 0)
@@ -229,32 +243,55 @@ public class BorrowRecordController : Controller
             );
         }
 
+
+        // =========================
+        // KIỂM TRA MODEL
+        // =========================
+
         if (ModelState.IsValid)
         {
             var now = DateTime.Now;
 
-            foreach (var bookId in BookIds)
+            // Lấy toàn bộ sách được chọn
+            var selectedBooks = await _context.Books
+                .Where(b => BookIds.Contains(b.Id))
+                .ToListAsync();
+
+            // =========================
+            // TẠO PHIẾU MƯỢN
+            // + TRỪ SỐ SÁCH CÓ SẴN
+            // =========================
+
+            foreach (var book in selectedBooks)
             {
                 var borrow = new BorrowRecord
                 {
                     MemberId = borrowrecord.MemberId,
-                    BookId = bookId,
+                    BookId = book.Id,
+
                     BorrowDate = now,
                     DueDate = borrowrecord.DueDate,
                     ReturnDate = borrowrecord.ReturnDate,
+
                     Status = borrowrecord.Status,
+
                     Note = borrowrecord.Note,
+
                     CreatedAt = now,
                     UpdatedAt = now
                 };
 
                 _context.BorrowRecords.Add(borrow);
-            }
 
+
+                // Trừ 1 bản sách có sẵn
+                book.AvailableCopies--;
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
+
 
         return View(borrowrecord);
     }

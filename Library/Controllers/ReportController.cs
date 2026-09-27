@@ -66,21 +66,13 @@ namespace Library.Controllers
             // =========================
 
             var borrowingBooks = await _context.BorrowRecords
-                .CountAsync(b =>
-                    b.ReturnDate == null &&
-                    b.DueDate >= now);
-
+                .CountAsync(b => b.ReturnDate == null);
 
             var overdueBooks = await _context.BorrowRecords
-                .CountAsync(b =>
-                    b.ReturnDate == null &&
-                    b.DueDate < now);
-
+                .CountAsync(b => b.ReturnDate == null && b.DueDate < now);
 
             var returnedBooks = await _context.BorrowRecords
-                .CountAsync(b =>
-                    b.ReturnDate != null);
-
+                .CountAsync(b => b.ReturnDate != null);
 
             // =========================
             // THỂ LOẠI

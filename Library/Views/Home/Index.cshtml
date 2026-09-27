@@ -256,7 +256,7 @@
                         <div class="progress mb-4"
                              style="height: 6px;">
                             <div class="progress-bar bg-success"
-                                 style="width: @availablePercent%;">
+                                 style="width: @availablePercent.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%;">
                             </div>
                         </div>
                         <!-- Sách đang mượn -->
@@ -272,7 +272,7 @@
                         <div class="progress mb-4"
                              style="height: 6px;">
                             <div class="progress-bar bg-warning"
-                                 style="width: @borrowingPercent%;">
+                                 style="width: @borrowingPercent.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%;">
                             </div>
                         </div>
                         <!-- Sách quá hạn -->
@@ -288,7 +288,7 @@
                         <div class="progress mb-4"
                              style="height: 6px;">
                             <div class="progress-bar bg-danger"
-                                 style="width: @overduePercent%;">
+                                 style="width: @overduePercent.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%;">
                             </div>
                         </div>
                         <hr />

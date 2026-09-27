@@ -16,10 +16,12 @@ namespace Library.Controllers
 
 
         // GET: Category
-
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
             var query = _context.Categories
+                .Include(c => c.Books.Where(b =>
+                    b.DeletedAt == default(DateTime) ||
+                    b.DeletedAt == null))
                 .Where(c => c.DeletedAt == default(DateTime))
                 .OrderByDescending(c => c.Id);
 

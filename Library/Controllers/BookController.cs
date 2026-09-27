@@ -8,19 +8,13 @@ public class BookController : Controller
 {
     private readonly LibraryContext _context;
 
-    private int pageSize = 10;
-
     public BookController(LibraryContext context)
     {
         _context = context;
     }
 
     // GET: BOOKS
-    // GET: BOOKS
-    public async Task<IActionResult> Index(
-        int page = 1,
-        int pageSize = 10,
-        int? mid = null)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, int? mid = null)
     {
         if (page < 1)
         {

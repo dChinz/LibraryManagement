@@ -7,9 +7,7 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews()
-    .AddViewLocalization()
-    .AddDataAnnotationsLocalization();
+builder.Services.AddControllersWithViews().AddViewLocalization().AddDataAnnotationsLocalization();
 
 builder.Services.AddLocalization(options =>
 {
@@ -43,6 +41,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     DbInitalizer.Initalizer(services);
 }
 

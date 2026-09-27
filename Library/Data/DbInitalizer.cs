@@ -254,6 +254,29 @@ namespace Library.Data
                 context.BorrowRecords.AddRange(records);
                 context.SaveChanges();
 
+                // =========================================================
+                // CẬP NHẬT AVAILABLE COPIES
+                // =========================================================
+
+                var activeBorrowRecords = records
+                    .Where(r =>
+                        r.Status == BookStatus.BORROWING ||
+                        r.Status == BookStatus.OVERDUE)
+                    .ToList();
+
+                foreach (var record in activeBorrowRecords)
+                {
+                    var book = bookList.FirstOrDefault(b => b.Id == record.BookId);
+
+                    if (book != null && book.AvailableCopies > 0)
+                    {
+                        book.AvailableCopies--;
+                        book.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
+
+                context.SaveChanges();
+
 
                 // =========================================================
                 // 5. SEED FINE - 20 RECORDS
