@@ -1,9 +1,7 @@
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Library.Data;
 using Library.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 public class FineController : Controller
 {
@@ -14,21 +12,192 @@ public class FineController : Controller
         _context = context;
     }
 
-    // GET: FINES
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    // GET: Fine
+    public async Task<IActionResult> Index(
+        string? searchString,
+        int? borrowRecordId,
+        int page = 1,
+        int pageSize = 10)
     {
+        var now = DateTime.Now;
+        var today = now.Date;
+
+        // 1. Lấy cấu hình mức phạt hiện tại.
+        var fineSetting = await _context.FinePerDays
+            .FirstOrDefaultAsync();
+
+        decimal currentFinePerDay = fineSetting?.Price ?? 5000m;
+
+        // Ngày cập nhật mức phạt gần nhất.
+        DateTime priceUpdatedAt = fineSetting?.UpdatedAt.Date
+            ?? DateTime.MaxValue.Date;
+
+        const decimal oldFinePerDay = 5000m;
+
+        // 2. Lấy các lượt mượn đang quá hạn.
+        var overdueRecords = await _context.BorrowRecords
+            .Where(r => r.Status == BookStatus.OVERDUE)
+            .ToListAsync();
+
+        var overdueIds = overdueRecords
+            .Select(r => r.Id)
+            .ToList();
+
+        // 3. Lấy các khoản phạt đã tồn tại của những lượt mượn quá hạn.
+        var existingFines = await _context.Fines
+            .Where(f => overdueIds.Contains(f.BorrowRecordId))
+            .ToListAsync();
+
+        // 4. Tính tiền phạt cho từng lượt mượn quá hạn.
+        foreach (var record in overdueRecords)
+        {
+            // Chưa đến ngày quá hạn thì bỏ qua.
+            if (record.DueDate.Date >= today)
+                continue;
+
+            var fine = existingFines
+                .FirstOrDefault(f => f.BorrowRecordId == record.Id);
+
+            // Không tính lại khoản phạt đã thanh toán.
+            if (fine != null && fine.IsPaid)
+                continue;
+
+            // Ngày đầu tiên tính phạt là ngày sau hạn trả.
+            DateTime firstOverdueDate = record.DueDate.Date.AddDays(1);
+
+            // Tính số ngày áp dụng giá cũ.
+            // Nếu chưa cấu hình mức phạt, tất cả ngày quá hạn
+            // được tính theo mức mặc định 5.000 đồng/ngày.
+            int oldDays = 0;
+
+            if (priceUpdatedAt == DateTime.MaxValue.Date)
+            {
+                oldDays = (today - firstOverdueDate).Days + 1;
+            }
+            else
+            {
+                DateTime oldPeriodEnd = priceUpdatedAt.AddDays(-1);
+
+                if (firstOverdueDate <= oldPeriodEnd)
+                {
+                    DateTime oldEnd = oldPeriodEnd < today
+                        ? oldPeriodEnd
+                        : today;
+
+                    if (firstOverdueDate <= oldEnd)
+                    {
+                        oldDays = (oldEnd - firstOverdueDate).Days + 1;
+                    }
+                }
+            }
+
+            // Tính số ngày áp dụng giá hiện tại,
+            // bắt đầu từ ngày cập nhật giá.
+            int newDays = 0;
+
+            if (priceUpdatedAt != DateTime.MaxValue.Date)
+            {
+                DateTime newPeriodStart = firstOverdueDate > priceUpdatedAt
+                    ? firstOverdueDate
+                    : priceUpdatedAt;
+
+                if (newPeriodStart <= today)
+                {
+                    newDays = (today - newPeriodStart).Days + 1;
+                }
+            }
+
+            decimal amount =
+                oldDays * oldFinePerDay
+                + newDays * currentFinePerDay;
+
+            int overdueDays = (today - record.DueDate.Date).Days;
+
+            string reason = $"Trả sách trễ hạn {overdueDays} ngày";
+
+            // 5. Tạo khoản phạt mới hoặc cập nhật khoản chưa thanh toán.
+            if (fine == null)
+            {
+                fine = new Fine
+                {
+                    BorrowRecordId = record.Id,
+                    Amount = amount,
+                    Reason = reason,
+                    IsPaid = false,
+                    PaidDate = null,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                };
+
+                _context.Fines.Add(fine);
+                existingFines.Add(fine);
+            }
+            else
+            {
+                fine.Amount = amount;
+                fine.Reason = reason;
+                fine.UpdatedAt = now;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // 6. Lấy danh sách tiền phạt.
         var query = _context.Fines
-            .Include (f => f.BorrowRecord)
-            .ThenInclude(f => f.Member)
-            .OrderByDescending(f => f.Id);
+            .Include(f => f.BorrowRecord)
+                .ThenInclude(b => b.Member)
+            .Include(f => f.BorrowRecord)
+                .ThenInclude(b => b.Book)
+            .AsQueryable();
+
+        // 7. Lọc theo mã lượt mượn nếu được chuyển từ bảng mượn sách.
+        if (borrowRecordId.HasValue)
+        {
+            // Lọc chính xác theo mã lượt mượn.
+            query = query.Where(f =>
+                f.BorrowRecordId == borrowRecordId.Value);
+        }
+        else if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            // Tìm kiếm theo từ khóa.
+            searchString = searchString.Trim();
+
+            query = query.Where(f => f.BorrowRecordId.ToString().Contains(searchString));
+        }
+
+        // 8. Sắp xếp và phân trang.
+        query = query.OrderByDescending(f => f.CreatedAt);
 
         int totalItems = await query.CountAsync();
+
+        if (page < 1)
+            page = 1;
+
+        if (pageSize < 1)
+            pageSize = 10;
+
+        int totalPages = (int)Math.Ceiling(
+            totalItems / (double)pageSize);
+
+        // Đảm bảo trang hiện tại không vượt quá tổng số trang.
+        if (totalPages > 0 && page > totalPages)
+            page = totalPages;
 
         var fines = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
+        // 9. Truyền dữ liệu sang View.
+        ViewBag.SearchString = searchString;
+        ViewBag.BorrowRecordId = borrowRecordId;
+        ViewBag.CurrentPage = page;
+        ViewBag.PageSize = pageSize;
+        ViewBag.TotalItems = totalItems;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.CurrentFinePerDay = currentFinePerDay;
+
+        // Model phân trang.
         ViewBag.Pagination = new PaginationViewModel
         {
             CurrentPage = page,
@@ -39,263 +208,64 @@ public class FineController : Controller
         return View(fines);
     }
 
-    // GET: FINES/Details/5
+    // GET: Fine/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
         var fine = await _context.Fines
             .Include(f => f.BorrowRecord)
-                .ThenInclude(b => b.Member)
-            .Include(f => f.BorrowRecord)
-                .ThenInclude(b => b.Book)
             .FirstOrDefaultAsync(f => f.Id == id);
 
         if (fine == null)
-        {
             return NotFound();
-        }
 
         return View(fine);
     }
 
-    // GET: FINES/Create
-    public async Task<IActionResult> Create()
-    {
-        var borrowRecords = await _context.BorrowRecords
-            .Include(b => b.Member)
-            .Include(b => b.Book)
-            .OrderByDescending(b => b.BorrowDate)
-            .ToListAsync();
-
-        var borrowRecordList = borrowRecords.Select(b => new
-        {
-            Id = b.Id,
-            DisplayName =
-                "#" + b.Id +
-                " - " +
-                (b.Member != null ? b.Member.FullName : "Không có độc giả") +
-                " - " +
-                (b.Book != null ? b.Book.Title : "Không có sách")
-        });
-
-        ViewData["BorrowRecordId"] = new SelectList(
-            borrowRecordList,
-            "Id",
-            "DisplayName"
-        );
-
-        return View();
-    }
-
-    // POST: FINES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Fine/FineCollected/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
-    [Bind("BorrowRecordId,Amount,Reason,IsPaid,PaidDate")]
-    Fine fine)
+    public async Task<IActionResult> FineCollected(int id)
     {
-        if (ModelState.IsValid)
+        var fine = await _context.Fines
+            .Include(f => f.BorrowRecord)
+            .FirstOrDefaultAsync(f => f.Id == id);
+
+        if (fine == null)
         {
-            var now = DateTime.Now;
-
-            fine.CreatedAt = now;
-            fine.UpdatedAt = now;
-
-            if (fine.IsPaid && !fine.PaidDate.HasValue)
-            {
-                fine.PaidDate = now;
-            }
-
-            if (!fine.IsPaid)
-            {
-                fine.PaidDate = null;
-            }
-
-            _context.Fines.Add(fine);
-
-            await _context.SaveChangesAsync();
-
+            TempData["Error"] = "Không tìm thấy khoản phạt.";
             return RedirectToAction(nameof(Index));
         }
 
-        var borrowRecords = await _context.BorrowRecords
-            .Include(b => b.Member)
-            .Include(b => b.Book)
-            .OrderByDescending(b => b.BorrowDate)
-            .ToListAsync();
-
-        var borrowRecordList = borrowRecords.Select(b => new
+        if (fine.IsPaid)
         {
-            Id = b.Id,
-            DisplayName =
-                "#" + b.Id +
-                " - " +
-                (b.Member != null ? b.Member.FullName : "Không có độc giả") +
-                " - " +
-                (b.Book != null ? b.Book.Title : "Không có sách")
-        });
-
-        ViewData["BorrowRecordId"] = new SelectList(
-            borrowRecordList,
-            "Id",
-            "DisplayName",
-            fine.BorrowRecordId
-        );
-
-        return View(fine);
-    }
-
-    // GET: FINES/Edit
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var fine = await _context.Fines
-            .FirstOrDefaultAsync(f => f.Id == id);
-
-        if (fine == null)
-        {
-            return NotFound();
-        }
-
-        var borrowRecords = await _context.BorrowRecords
-            .Include(b => b.Member)
-            .Include(b => b.Book)
-            .OrderByDescending(b => b.BorrowDate)
-            .ToListAsync();
-
-        var borrowRecordList = borrowRecords.Select(b => new
-        {
-            Id = b.Id,
-            DisplayName =
-                "#" + b.Id +
-                " - " +
-                (b.Member != null ? b.Member.FullName : "Không có độc giả") +
-                " - " +
-                (b.Book != null ? b.Book.Title : "Không có sách")
-        });
-
-        ViewData["BorrowRecordId"] = new SelectList(
-            borrowRecordList,
-            "Id",
-            "DisplayName",
-            fine.BorrowRecordId
-        );
-
-        return View(fine);
-    }
-
-    // POST: FINES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(
-    int id,
-    [Bind("Id,BorrowRecordId,Amount,Reason,IsPaid,PaidDate")]
-    Fine fine)
-    {
-        if (id != fine.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            var existingFine = await _context.Fines
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (existingFine == null)
-            {
-                return NotFound();
-            }
-
-            existingFine.BorrowRecordId = fine.BorrowRecordId;
-            existingFine.Amount = fine.Amount;
-            existingFine.Reason = fine.Reason;
-            existingFine.IsPaid = fine.IsPaid;
-            existingFine.PaidDate = fine.IsPaid
-                ? (fine.PaidDate ?? DateTime.Now)
-                : null;
-
-            existingFine.UpdatedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-
+            TempData["Error"] = "Khoản phạt này đã được thanh toán trước đó.";
             return RedirectToAction(nameof(Index));
         }
 
-        var borrowRecords = await _context.BorrowRecords
-            .Include(b => b.Member)
-            .Include(b => b.Book)
-            .OrderByDescending(b => b.BorrowDate)
-            .ToListAsync();
+        var now = DateTime.Now;
 
-        var borrowRecordList = borrowRecords.Select(b => new
+        // 1. Cập nhật khoản phạt.
+        fine.IsPaid = true;
+        fine.PaidDate = now;
+        fine.UpdatedAt = now;
+
+        // 2. Chỉ cập nhật thông tin lượt mượn,
+        // không tự chuyển trạng thái khi độc giả chưa trả sách.
+        if (fine.BorrowRecord != null)
         {
-            Id = b.Id,
-            DisplayName =
-                "#" + b.Id +
-                " - " +
-                (b.Member != null ? b.Member.FullName : "Không có độc giả") +
-                " - " +
-                (b.Book != null ? b.Book.Title : "Không có sách")
-        });
+            fine.BorrowRecord.UpdatedAt = now;
 
-        ViewData["BorrowRecordId"] = new SelectList(
-            borrowRecordList,
-            "Id",
-            "DisplayName",
-            fine.BorrowRecordId
-        );
-
-        return View(fine);
-    }
-
-    // GET: FINES/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
+            // Không tự đổi OVERDUE thành RETURNED ở đây.
+            // Trạng thái RETURNED cần được cập nhật tại chức năng trả sách.
         }
 
-        var fine = await _context.Fines
-            .Include(f => f.BorrowRecord)
-                .ThenInclude(b => b.Member)
-            .Include(f => f.BorrowRecord)
-                .ThenInclude(b => b.Book)
-            .FirstOrDefaultAsync(f => f.Id == id);
+        await _context.SaveChangesAsync();
 
-        if (fine == null)
-        {
-            return NotFound();
-        }
-
-        return View(fine);
-    }
-
-    // POST: FINES/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var fine = await _context.Fines.FindAsync(id);
-
-        if (fine != null)
-        {
-            _context.Fines.Remove(fine);
-            await _context.SaveChangesAsync();
-        }
+        TempData["Success"] =
+            "Đã xác nhận thu tiền phạt thành công.";
 
         return RedirectToAction(nameof(Index));
     }

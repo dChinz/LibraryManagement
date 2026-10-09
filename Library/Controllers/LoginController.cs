@@ -30,13 +30,9 @@ namespace Library.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(
-            string username,
-            string password,
-            bool rememberMe)
+        public async Task<IActionResult> Login(string username, string password, bool rememberMe)
         {
-            if (string.IsNullOrWhiteSpace(username) ||
-                string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 ModelState.AddModelError(
                     "",

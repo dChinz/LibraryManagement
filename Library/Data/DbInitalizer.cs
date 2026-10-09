@@ -277,31 +277,39 @@ namespace Library.Data
 
                 context.SaveChanges();
 
+                // =========================================================
+                // 5. SEED FINE
+                //    Tiền phạt: 5.000 VNĐ / ngày quá hạn
+                // =========================================================
 
-                // =========================================================
-                // 5. SEED FINE - 20 RECORDS
-                //    Tạo tiền phạt cho 20 lượt mượn quá hạn
-                // =========================================================
+                const decimal finePerDay = 5000m;
+                var today = DateTime.UtcNow.Date;
 
                 var overdueRecords = context.BorrowRecords
                     .Where(r => r.Status == BookStatus.OVERDUE)
                     .OrderBy(r => r.Id)
-                    .Take(20)
                     .ToList();
 
                 var fines = new List<Fine>();
 
-                for (int i = 0; i < overdueRecords.Count; i++)
+                foreach (var record in overdueRecords)
                 {
+                    // Số ngày quá hạn thực tế
+                    int overdueDays = Math.Max(
+                        0,
+                        (today - record.DueDate.Date).Days
+                    );
+
+                    // Tiền phạt = số ngày quá hạn × 5.000 VNĐ
+                    decimal amount = overdueDays * finePerDay;
+
                     fines.Add(new Fine
                     {
-                        BorrowRecordId = overdueRecords[i].Id,
-                        Amount = 20000m + (i * 5000m),
-                        Reason = "Trả sách trễ hạn",
-                        IsPaid = i % 3 == 0,
-                        PaidDate = i % 3 == 0
-                            ? DateTime.UtcNow.AddDays(-(i % 10))
-                            : null,
+                        BorrowRecordId = record.Id,
+                        Amount = amount,
+                        Reason = $"Trả sách trễ hạn {overdueDays} ngày",
+                        IsPaid = false,
+                        PaidDate = null,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
                     });

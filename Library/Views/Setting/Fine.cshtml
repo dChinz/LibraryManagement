@@ -1,0 +1,111 @@
+﻿@model Library.Models.FinePerDay
+
+@{
+    ViewData["Title"] = "Cài đặt tiền phạt";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Cài đặt tiền phạt</h1>
+            <p class="text-muted mb-0">
+                Thiết lập số tiền phạt cho mỗi ngày quá hạn
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+        </div>
+    }
+
+    <div class="card">
+
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="bi bi-cash-coin me-2"></i>
+                Mức phạt quá hạn
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-controller="FinePerDays"
+                  asp-action="Update"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Price"
+                               class="form-label">
+                            Tiền phạt mỗi ngày
+                        </label>
+
+                        <div class="input-group">
+                            <input asp-for="Price"
+                                   type="number"
+                                   min="0"
+                                   step="1000"
+                                   class="form-control" />
+
+                            <span class="input-group-text">
+                                ₫ / ngày
+                            </span>
+                        </div>
+
+                        <span asp-validation-for="Price"
+                              class="text-danger">
+                        </span>
+
+                        <div class="form-text">
+                            Số tiền được áp dụng cho mỗi ngày quá hạn.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>
+                        Lưu thay đổi
+                    </button>
+
+                    <a asp-controller="Fine"
+                       asp-action="Index"
+                       class="btn btn-secondary ms-2">
+                        Hủy
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

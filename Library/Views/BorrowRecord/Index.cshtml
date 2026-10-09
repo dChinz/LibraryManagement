@@ -18,7 +18,33 @@
                 Quản lý thông tin mượn và trả sách trong thư viện
             </p>
         </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show"
+                 role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                @TempData["Success"]
 
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show"
+                 role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                @TempData["Error"]
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        }
         <div>
             <a asp-action="Create" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-1"></i>
@@ -87,7 +113,7 @@
                         <th>Ngày trả</th>
                         <th>Trạng thái</th>
                         <th>Ghi chú</th>
-                        <th style="width: 150px;">Thao tác</th>
+                        <th style="width: 170px;">Thao tác</th>
                     </tr>
                 </thead>
 
@@ -144,12 +170,18 @@
                                             Đang mượn
                                         </span>
                                     }
+
                                     else if (item.Status.ToString() == "OVERDUE")
                                     {
-                                        <span class="badge text-bg-danger">
+                                        <a asp-controller="Fine"
+                                           asp-action="Index"
+                                           asp-route-searchString="@item.Id"
+                                           class="badge text-bg-danger text-decoration-none"
+                                           title="Xem tiền phạt của lượt mượn #@item.Id">
                                             <i class="bi bi-exclamation-triangle me-1"></i>
                                             Quá hạn
-                                        </span>
+                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                        </a>
                                     }
                                 </td>
 
@@ -167,14 +199,7 @@
                                 </td>
 
                                 <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Details"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-info"
-                                           title="Xem chi tiết">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-
+                                    <div class="d-flex flex-wrap gap-1">
                                         <a asp-action="Edit"
                                            asp-route-id="@item.Id"
                                            class="btn btn-sm btn-warning"
@@ -182,14 +207,63 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
+                                        @if (item.Status == Library.Models.BookStatus.BORROWING
+                                            || item.Status == Library.Models.BookStatus.OVERDUE)
+                                        {
+                                            <!-- Xác nhận trả sách -->
+                                            <form asp-action="ConfirmReturn"
+                                                  asp-route-id="@item.Id"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Xác nhận độc giả đã trả sách này?');">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success"
+                                                        title="Xác nhận trả sách">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                            </form>
+
+                                            <!-- Báo mất sách -->
+                                            <form asp-action="ConfirmLost"
+                                                  asp-route-id="@item.Id"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Xác nhận sách bị mất? Số lượng sách trong kho sẽ được cập nhật.');">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Xác nhận mất sách">
+                                                    <i class="bi bi-exclamation-triangle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (item.Status == Library.Models.BookStatus.RETURNED)
+                                        {
+                                            <span class="badge text-bg-success align-self-center">
+                                                Đã trả
+                                            </span>
+                                        }
+                                        else if (item.Status == Library.Models.BookStatus.LOST)
+                                        {
+                                            <span class="badge text-bg-danger align-self-center">
+                                                Đã mất
+                                            </span>
+                                        }
+
                                         <a asp-action="Delete"
                                            asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-danger"
-                                           title="Xóa">
+                                           class="btn btn-sm btn-outline-danger"
+                                           title="Xóa lượt mượn">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
                                 </td>
+
                             </tr>
                         }
                     }

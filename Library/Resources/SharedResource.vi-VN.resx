@@ -117,7 +117,310 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+
   <data name="DashboardTitle" xml:space="preserve">
     <value>Bảng điều khiển</value>
   </data>
+
+  <!-- Menu -->
+  <data name="Home" xml:space="preserve">
+    <value>Trang chủ</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Tổng quan</value>
+  </data>
+  <data name="Management" xml:space="preserve">
+    <value>Quản lý</value>
+  </data>
+  <data name="BookManagement" xml:space="preserve">
+    <value>Quản lý sách</value>
+  </data>
+  <data name="CategoryManagement" xml:space="preserve">
+    <value>Quản lý danh mục</value>
+  </data>
+  <data name="MemberManagement" xml:space="preserve">
+    <value>Quản lý độc giả</value>
+  </data>
+  <data name="BorrowManagement" xml:space="preserve">
+    <value>Quản lý mượn trả</value>
+  </data>
+  <data name="FineManagement" xml:space="preserve">
+    <value>Quản lý tiền phạt</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Quản lý tài khoản</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Đăng xuất</value>
+  </data>
+
+  <!-- Common -->
+  <data name="Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Lọc</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Chi tiết</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Thêm mới</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Chỉnh sửa</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Quay lại</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xác nhận</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Làm mới</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Không có dữ liệu</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Đang tải...</value>
+  </data>
+
+  <!-- Books -->
+  <data name="Book" xml:space="preserve">
+    <value>Sách</value>
+  </data>
+  <data name="ISBN" xml:space="preserve">
+    <value>Mã ISBN</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Tên sách</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Tác giả</value>
+  </data>
+  <data name="Publisher" xml:space="preserve">
+    <value>Nhà xuất bản</value>
+  </data>
+  <data name="PublishYear" xml:space="preserve">
+    <value>Năm xuất bản</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Danh mục</value>
+  </data>
+  <data name="TotalCopies" xml:space="preserve">
+    <value>Tổng số bản</value>
+  </data>
+  <data name="AvailableCopies" xml:space="preserve">
+    <value>Số bản có sẵn</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="CoverImage" xml:space="preserve">
+    <value>Ảnh bìa</value>
+  </data>
+
+  <!-- Members -->
+  <data name="Member" xml:space="preserve">
+    <value>Độc giả</value>
+  </data>
+  <data name="MemberCode" xml:space="preserve">
+    <value>Mã độc giả</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Địa chỉ</value>
+  </data>
+  <data name="JoinDate" xml:space="preserve">
+    <value>Ngày đăng ký</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Ngày hết hạn</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Đang hoạt động</value>
+  </data>
+  <data name="Expired" xml:space="preserve">
+    <value>Hết hạn</value>
+  </data>
+
+  <!-- Borrow records -->
+  <data name="BorrowRecord" xml:space="preserve">
+    <value>Phiếu mượn</value>
+  </data>
+  <data name="BorrowDate" xml:space="preserve">
+    <value>Ngày mượn</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Hạn trả</value>
+  </data>
+  <data name="ReturnDate" xml:space="preserve">
+    <value>Ngày trả</value>
+  </data>
+  <data name="Borrowing" xml:space="preserve">
+    <value>Đang mượn</value>
+  </data>
+  <data name="Returned" xml:space="preserve">
+    <value>Đã trả</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Quá hạn</value>
+  </data>
+
+  <!-- Fines -->
+  <data name="Fine" xml:space="preserve">
+    <value>Tiền phạt</value>
+  </data>
+  <data name="FineAmount" xml:space="preserve">
+    <value>Số tiền phạt</value>
+  </data>
+  <data name="FinePerDay" xml:space="preserve">
+    <value>Tiền phạt mỗi ngày</value>
+  </data>
+  <data name="FineReason" xml:space="preserve">
+    <value>Lý do phạt</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Đã thanh toán</value>
+  </data>
+  <data name="Unpaid" xml:space="preserve">
+    <value>Chưa thanh toán</value>
+  </data>
+  <data name="PaidDate" xml:space="preserve">
+    <value>Ngày thanh toán</value>
+  </data>
+  <data name="CollectFine" xml:space="preserve">
+    <value>Xác nhận thu tiền</value>
+  </data>
+
+  <!-- Users -->
+  <data name="Username" xml:space="preserve">
+    <value>Tên đăng nhập</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Xác nhận mật khẩu</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Vai trò</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Quản trị viên</value>
+  </data>
+  <data name="Librarian" xml:space="preserve">
+    <value>Thủ thư</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Tài khoản đang hoạt động</value>
+  </data>
+
+  <!-- Messages -->
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>Lưu dữ liệu thành công.</value>
+  </data>
+  <data name="CreateSuccess" xml:space="preserve">
+    <value>Thêm mới thành công.</value>
+  </data>
+  <data name="UpdateSuccess" xml:space="preserve">
+    <value>Cập nhật thành công.</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>Xóa dữ liệu thành công.</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Thao tác thất bại.</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa dữ liệu này không?</value>
+  </data>
+  <data name="RequiredField" xml:space="preserve">
+    <value>Trường này là bắt buộc.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Địa chỉ email không hợp lệ.</value>
+  </data>
+  <data name="InvalidLogin" xml:space="preserve">
+    <value>Tên đăng nhập hoặc mật khẩu không chính xác.</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Báo cáo</value>
+  </data>
+  
+<data name="LibraryOverview" xml:space="preserve">
+  <value>Tổng quan hoạt động của thư viện</value>
+</data>
+<data name="TotalBooks" xml:space="preserve">
+  <value>Tổng số sách</value>
+</data>
+<data name="ViewList" xml:space="preserve">
+  <value>Xem danh sách</value>
+</data>
+<data name="ViewDetails" xml:space="preserve">
+  <value>Xem chi tiết</value>
+</data>
+<data name="RecentBorrows" xml:space="preserve">
+  <value>Mượn sách gần đây</value>
+</data>
+<data name="ViewAll" xml:space="preserve">
+  <value>Xem tất cả</value>
+</data>
+<data name="BorrowDate" xml:space="preserve">
+  <value>Ngày mượn</value>
+</data>
+<data name="Status" xml:space="preserve">
+  <value>Trạng thái</value>
+</data>
+<data name="NoBorrowRecords" xml:space="preserve">
+  <value>Chưa có lượt mượn sách nào.</value>
+</data>
+<data name="AvailableBooks" xml:space="preserve">
+  <value>Sách có sẵn</value>
+</data>
+<data name="CurrentlyBorrowed" xml:space="preserve">
+  <value>Đang được mượn</value>
+</data>
+<data name="BookCategories" xml:space="preserve">
+  <value>Thể loại sách</value>
+</data>
+<data name="MonthlyBorrows" xml:space="preserve">
+  <value>Lượt mượn tháng này</value>
+</data>
+<data name="QuickActions" xml:space="preserve">
+  <value>Thao tác nhanh</value>
+</data>
+<data name="AddBook" xml:space="preserve">
+  <value>Thêm sách</value>
+</data>
+<data name="AddMember" xml:space="preserve">
+  <value>Thêm độc giả</value>
+</data>
+<data name="CreateBorrow" xml:space="preserve">
+  <value>Tạo lượt mượn</value>
+</data>
 </root>

@@ -1,3 +1,4 @@
+
 @model IEnumerable<Library.Models.Fine>
 
 @{
@@ -6,20 +7,28 @@
 
 <div class="container-fluid">
     <!-- PAGE HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
         <div>
             <h1 class="mb-1">Quản lý tiền phạt</h1>
             <p class="text-muted mb-0">
-                Quản lý các khoản phạt của độc giả
+                Theo dõi các khoản phạt tự động của độc giả
             </p>
         </div>
 
-        <div>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>
-                Thêm khoản phạt
-            </a>
-        </div>
+        @if (TempData["Success"] != null)
+        {
+            <div id="successAlert"
+                 class="alert alert-success alert-dismissible fade show success-toast mt-2"
+                 role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                @TempData["Success"]
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        }
     </div>
 
     <!-- SEARCH -->
@@ -40,62 +49,46 @@
                 </div>
 
                 <div class="col-md-4">
-                    <select id="paymentFilter"
-                            class="form-select">
+                    <select id="paymentFilter" class="form-select">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="Đã thanh toán">Đã thanh toán</option>
-                        <option value="Chưa thanh toán">Chưa thanh toán</option>
+                        <option value="paid">Đã thanh toán</option>
+                        <option value="unpaid">Chưa thanh toán</option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TABLE -->
+    <!-- FINE TABLE -->
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h3 class="card-title mb-0">
                 <i class="bi bi-cash-coin me-2"></i>
                 Danh sách khoản phạt
             </h3>
+
+            <a asp-controller="FinePerDays"
+               asp-action="Index"
+               class="btn btn-outline-primary">
+                <i class="bi bi-gear me-1"></i>
+                Thay đổi tiền phạt/ngày
+            </a>
         </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0"
+                <table class="table table-bordered table-hover align-middle mb-0"
                        id="fineTable">
-
                     <thead class="table-light">
                         <tr>
                             <th style="width: 70px;">#</th>
-
-                            <th>
-                                Độc giả
-                            </th>
-
-                            <th>
-                                Lượt mượn
-                            </th>
-
-                            <th>
-                                Số tiền
-                            </th>
-
-                            <th>
-                                Lý do
-                            </th>
-
-                            <th>
-                                Trạng thái
-                            </th>
-
-                            <th>
-                                Ngày thanh toán
-                            </th>
-
-                            <th style="width: 160px;">
-                                Thao tác
-                            </th>
+                            <th>Độc giả</th>
+                            <th>Lượt mượn</th>
+                            <th>Số tiền</th>
+                            <th>Lý do</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày thanh toán</th>
+                            <th style="width: 130px;">Thao tác</th>
                         </tr>
                     </thead>
 
@@ -106,11 +99,10 @@
 
                         @foreach (var item in Model)
                         {
-                            var paymentStatus = item.IsPaid
-                                ? "Đã thanh toán"
-                                : "Chưa thanh toán";
+                            var paymentStatus = item.IsPaid ? "paid" : "unpaid";
 
-                            <tr>
+                            <tr data-payment="@paymentStatus">
+                                <!-- INDEX -->
                                 <td>
                                     <span class="text-muted">
                                         @index
@@ -121,16 +113,12 @@
                                 <td>
                                     @if (item.BorrowRecord?.Member != null)
                                     {
-                                        <div class="d-flex align-items-center">
-                                            <div>
-                                                <div class="fw-semibold">
-                                                    @item.BorrowRecord.Member.FullName
-                                                </div>
+                                        <div class="fw-semibold">
+                                            @item.BorrowRecord.Member.FullName
+                                        </div>
 
-                                                <div class="text-muted small">
-                                                    @item.BorrowRecord.Member.MemberCode
-                                                </div>
-                                            </div>
+                                        <div class="text-muted small">
+                                            @item.BorrowRecord.Member.MemberCode
                                         </div>
                                     }
                                     else
@@ -146,11 +134,18 @@
                                     <span class="badge text-bg-secondary">
                                         #@item.BorrowRecordId
                                     </span>
+
+                                    @if (item.BorrowRecord?.Book != null)
+                                    {
+                                        <div class="text-muted small mt-1">
+                                            @item.BorrowRecord.Book.Title
+                                        </div>
+                                    }
                                 </td>
 
                                 <!-- AMOUNT -->
                                 <td>
-                                    <span class="fw-semibold text-danger">
+                                    <span class="fw-semibold @(item.IsPaid ? "text-success" : "text-danger")">
                                         @item.Amount.ToString("N0") ₫
                                     </span>
                                 </td>
@@ -173,7 +168,7 @@
                                 </td>
 
                                 <!-- PAYMENT STATUS -->
-                                <td class="payment-status">
+                                <td>
                                     @if (item.IsPaid)
                                     {
                                         <span class="badge text-bg-success">
@@ -195,7 +190,7 @@
                                     @if (item.PaidDate.HasValue)
                                     {
                                         <span>
-                                            @item.PaidDate.Value.ToString("dd/MM/yyyy")
+                                            @item.PaidDate.Value.ToString("dd/MM/yyyy HH:mm")
                                         </span>
                                     }
                                     else
@@ -208,21 +203,35 @@
 
                                 <!-- ACTIONS -->
                                 <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Xem">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <!-- Edit -->
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Sửa">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <!-- Delete -->
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Xóa">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
+                                    @if (!item.IsPaid)
+                                    {
+                                        <form asp-controller="Fine"
+                                              asp-action="FineCollected"
+                                              asp-route-id="@item.Id"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Xác nhận đã thu khoản phạt này?');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-success"
+                                                    title="Xác nhận đã thu tiền">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Đã thu
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success small">
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+                                            Đã thu
+                                        </span>
+                                    }
                                 </td>
                             </tr>
+
                             index++;
                         }
                     </tbody>
@@ -230,6 +239,7 @@
             </div>
         </div>
 
+        <!-- EMPTY STATE -->
         @if (!Model.Any())
         {
             <div class="card-body text-center py-5">
@@ -239,17 +249,25 @@
                     Chưa có khoản phạt nào
                 </h5>
 
-                <p class="text-muted mb-3">
-                    Hiện tại chưa có dữ liệu tiền phạt trong hệ thống.
+                <p class="text-muted mb-0">
+                    Các khoản phạt sẽ được hệ thống tự động tạo
+                    khi phát hiện phiếu mượn quá hạn.
                 </p>
-
-                <a asp-action="Create"
-                   class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i>
-                    Thêm khoản phạt
-                </a>
             </div>
         }
+        else
+        {
+            <!-- NO SEARCH RESULTS -->
+            <div id="noSearchResults"
+                 class="text-center text-muted py-4 d-none">
+                <i class="bi bi-search fs-3"></i>
+                <p class="mb-0 mt-2">
+                    Không tìm thấy khoản phạt phù hợp.
+                </p>
+            </div>
+        }
+
+        <!-- PAGINATION -->
         @await Html.PartialAsync(
             "_Pagination",
             (PaginationViewModel)ViewBag.Pagination
@@ -260,41 +278,116 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
             const searchInput = document.getElementById("fineSearch");
             const paymentFilter = document.getElementById("paymentFilter");
             const table = document.getElementById("fineTable");
+            const noResults = document.getElementById("noSearchResults");
 
-            if (!table) {
-                return;
+            if (table && searchInput && paymentFilter) {
+                const rows = Array.from(
+                    table.querySelectorAll("tbody tr")
+                );
+
+                function filterTable() {
+                    const keyword = searchInput.value
+                        .toLocaleLowerCase("vi")
+                        .trim();
+
+                    const payment = paymentFilter.value;
+                    let visibleCount = 0;
+
+                    rows.forEach(function (row) {
+                        const text = row.textContent
+                            .toLocaleLowerCase("vi");
+
+                        const matchesSearch = text.includes(keyword);
+
+                        const matchesPayment =
+                            payment === "" ||
+                            row.dataset.payment === payment;
+
+                        const visible = matchesSearch && matchesPayment;
+
+                        row.style.display = visible ? "" : "none";
+
+                        if (visible) {
+                            visibleCount++;
+                        }
+                    });
+
+                    if (noResults) {
+                        noResults.classList.toggle(
+                            "d-none",
+                            visibleCount > 0
+                        );
+                    }
+                }
+
+                searchInput.addEventListener("input", filterTable);
+                paymentFilter.addEventListener("change", filterTable);
             }
 
-            const rows = table.querySelectorAll("tbody tr");
+            // SUCCESS ALERT
+            const alert = document.getElementById("successAlert");
 
-            function filterTable() {
-                const keyword = searchInput.value.toLowerCase().trim();
-                const payment = paymentFilter.value.toLowerCase();
+            if (alert) {
+                setTimeout(function () {
+                    if (!alert.isConnected) {
+                        return;
+                    }
 
-                rows.forEach(function (row) {
-                    const text = row.textContent.toLowerCase();
+                    alert.classList.add("hide-animation");
 
-                    const matchesSearch =
-                        text.includes(keyword);
-
-                    const matchesPayment =
-                        payment === "" ||
-                        text.includes(payment);
-
-                    row.style.display =
-                        matchesSearch && matchesPayment
-                            ? ""
-                            : "none";
-                });
+                    setTimeout(function () {
+                        alert.remove();
+                    }, 500);
+                }, 3000);
             }
-
-            searchInput.addEventListener("input", filterTable);
-
-            paymentFilter.addEventListener("change", filterTable);
         });
     </script>
+
+    <style>
+        .success-toast {
+            animation: slideInRight 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        @@keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .success-toast.hide-animation {
+            animation: slideOutRight 0.5s ease-in forwards;
+        }
+
+        @@keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .reason-column {
+            display: inline-block;
+            max-width: 250px;
+            overflow-wrap: anywhere;
+        }
+
+        #fineTable th {
+            white-space: nowrap;
+        }
+    </style>
 }

@@ -9,97 +9,94 @@
 
     <div class="sidebar-wrapper">
         <nav class="mt-2" aria-label="Main navigation">
-            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false" id="navigation"> 
-                <!-- Dashboard -->
+            <ul class="nav sidebar-menu flex-column"
+                data-lte-toggle="treeview"
+                data-accordion="false"
+                id="navigation">
+
+                <!-- DASHBOARD -->
                 <li class="nav-item">
                     <a asp-controller="Home"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-speedometer2"></i>
-                        <p>
-                            @Localizer["DashboardTitle"]
-                        </p>
+                        <p>@Localizer["DashboardTitle"]</p>
                     </a>
                 </li>
+
                 <!-- BOOKS -->
                 <li class="nav-item">
                     <a asp-controller="Book"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-book"></i>
-                        <p>
-                            Quản lý sách
-                        </p>
+                        <p>@Localizer["BookManagement"]</p>
                     </a>
                 </li>
+
                 <!-- MEMBERS -->
                 <li class="nav-item">
                     <a asp-controller="Member"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-people"></i>
-                        <p>
-                            Độc giả
-                        </p>
+                        <p>@Localizer["MemberManagement"]</p>
                     </a>
                 </li>
-                <!-- BORROW -->
+
+                <!-- BORROW / RETURN -->
                 <li class="nav-item">
                     <a asp-controller="BorrowRecord"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-arrow-left-right"></i>
-                        <p>
-                            Mượn / trả sách
-                        </p>
+                        <p>@Localizer["BorrowManagement"]</p>
                     </a>
                 </li>
+
                 <!-- CATEGORY -->
                 <li class="nav-item">
                     <a asp-controller="Category"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-tags"></i>
-                        <p>
-                            Thể loại
-                        </p>
+                        <p>@Localizer["CategoryManagement"]</p>
                     </a>
                 </li>
-                <!-- FINE -->
+
+                <!-- FINES -->
                 <li class="nav-item">
                     <a asp-controller="Fine"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-cash-coin"></i>
-                        <p>
-                            Tiền phạt
-                        </p>
+                        <p>@Localizer["FineManagement"]</p>
                     </a>
                 </li>
-                <!-- REPORT -->
+
+                <!-- REPORTS -->
                 <li class="nav-item">
                     <a asp-controller="Report"
                        asp-action="Index"
                        class="nav-link">
                         <i class="nav-icon bi bi-bar-chart"></i>
-                        <p>
-                            Báo cáo
-                        </p>
+                        <p>@Localizer["Reports"]</p>
                     </a>
                 </li>
+
+                <!-- USER MANAGEMENT: ADMIN ONLY -->
                 @if (User.IsInRole("ADMIN"))
                 {
                     <li class="nav-item">
                         <a asp-controller="User"
                            asp-action="Index"
                            class="nav-link">
-                            <i class="nav-icon bi bi-people"></i>
-                            <p>
-                                Người dùng
-                            </p>
+                            <i class="nav-icon bi bi-person-gear"></i>
+                            <p>@Localizer["UserManagement"]</p>
                         </a>
                     </li>
                 }
+
             </ul>
         </nav>
     </div>

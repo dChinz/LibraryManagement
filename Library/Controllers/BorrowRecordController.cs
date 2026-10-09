@@ -419,4 +419,109 @@ public class BorrowRecordController : Controller
     {
         return _context.BorrowRecords.Any(e => e.Id == id);
     }
+
+    // POST: BorrowRecord/ConfirmReturn/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmReturn(int id)
+        {
+            var record = await _context.BorrowRecords
+                .Include(r => r.Book)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (record == null)
+            {
+                TempData["Error"] = "Không tìm thấy lượt mượn.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Chỉ cho phép trả sách đang mượn hoặc quá hạn.
+            if (record.Status != BookStatus.BORROWING
+                && record.Status != BookStatus.OVERDUE)
+            {
+                TempData["Error"] =
+                    "Lượt mượn này đã được trả hoặc đã được xác nhận mất sách.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (record.Book == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin sách.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var now = DateTime.Now;
+
+            // Cập nhật lượt mượn.
+            record.Status = BookStatus.RETURNED;
+            record.ReturnDate = now;
+            record.UpdatedAt = now;
+
+            // Sách được trả về kho: tăng số lượng có thể cho mượn.
+            record.Book.AvailableCopies++;
+            record.Book.UpdatedAt = now;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] =
+                "Xác nhận trả sách thành công. Số lượng sách đã được cập nhật.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+    // POST: BorrowRecord/ConfirmLost/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmLost(int id)
+    {
+        var record = await _context.BorrowRecords
+            .Include(r => r.Book)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (record == null)
+        {
+            TempData["Error"] = "Không tìm thấy lượt mượn.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Không xử lý lại lượt mượn đã trả hoặc đã mất.
+        if (record.Status != BookStatus.BORROWING
+            && record.Status != BookStatus.OVERDUE)
+        {
+            TempData["Error"] =
+                "Lượt mượn này đã được trả hoặc đã được xác nhận mất sách.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (record.Book == null)
+        {
+            TempData["Error"] = "Không tìm thấy thông tin sách.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var now = DateTime.Now;
+
+        // Cập nhật trạng thái lượt mượn.
+        record.Status = BookStatus.LOST;
+        record.UpdatedAt = now;
+
+        // Sách đã mất: giảm tổng số bản sách trong kho.
+        // Không giảm AvailableCopies vì sách đang mượn
+        // đã được trừ khỏi số lượng có thể cho mượn trước đó.
+        if (record.Book.TotalCopies > 0)
+        {
+            record.Book.TotalCopies--;
+        }
+
+        record.Book.UpdatedAt = now;
+
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] =
+            "Đã xác nhận mất sách. Tổng số lượng sách đã được cập nhật.";
+
+        return RedirectToAction(nameof(Index));
+    }
 }

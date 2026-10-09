@@ -13,6 +13,7 @@ namespace Library.Data
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<BorrowRecord> BorrowRecords { get; set; }
         public virtual DbSet<Fine> Fines { get; set; }
+        public virtual DbSet<FinePerDay> FinePerDays { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,7 @@ namespace Library.Data
             modelBuilder.Entity<Book>().ToTable(nameof(Book));
             modelBuilder.Entity<Category>().ToTable(nameof(Category));
             modelBuilder.Entity<User>().ToTable(nameof(User));
+            modelBuilder.Entity<FinePerDay>().ToTable(nameof(FinePerDay));
         }
     }
 }
