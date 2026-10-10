@@ -1,4 +1,5 @@
-﻿using Library.Models;
+﻿using BCrypt.Net;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Data
@@ -324,12 +325,14 @@ namespace Library.Data
                 //    GIỮ NGUYÊN, KHÔNG THÊM USER MỚI
                 // =========================================================
 
+                string adminPassword = "123456aa";
+                string libPassword = "123456aa";
                 var users = new List<User>
                 {
                     new User
                     {
                         Username = "admin",
-                        PasswordHash = "$2a$11$vrFN/HSayqHwJcrtbRH2UObki3oWnmyAA1GuRTeExEjy.c/LKSz1u",
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
                         FullName = "Admin",
                         Email = "admin@gmail.com",
                         Role = UseRole.ADMIN,
@@ -341,7 +344,8 @@ namespace Library.Data
                     new User
                     {
                         Username = "library",
-                        PasswordHash = "$2a$11$3p6izJLWv4VcU0TagjDjwuykm.YsZ4ZjN9De9pUlFfjgn7Ex8DaEW",
+
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(libPassword),
                         FullName = "Library",
                         Email = "library@gmail.com",
                         Role = UseRole.LIBRARIAN,

@@ -72,19 +72,21 @@
 
                             <!-- Password -->
                             <div class="col-md-6">
-                                <label asp-for="PasswordHash" class="form-label fw-semibold">
-                                    Mật khẩu
+                                <label for="NewPassword" class="form-label fw-semibold">
+                                    Mật khẩu mới
                                 </label>
 
                                 <div class="input-group">
-                                    <span class="input-group-text ">
+                                    <span class="input-group-text">
                                         <i class="bi bi-lock"></i>
                                     </span>
 
-                                    <input asp-for="PasswordHash"
-                                           type="password"
+                                    <input type="password"
+                                           id="NewPassword"
+                                           name="newPassword"
                                            class="form-control"
-                                           placeholder="Nhập mật khẩu" />
+                                           placeholder="Nhập mật khẩu mới nếu muốn đổi"
+                                           autocomplete="new-password" />
 
                                     <button type="button"
                                             class="btn btn-outline-secondary"
@@ -94,11 +96,8 @@
                                     </button>
                                 </div>
 
-                                <span asp-validation-for="PasswordHash"
-                                      class="text-danger small"></span>
-
                                 <small class="text-muted">
-                                    Để trống nếu không muốn thay đổi mật khẩu.
+                                    Để trống nếu muốn giữ nguyên mật khẩu hiện tại.
                                 </small>
                             </div>
 
@@ -244,17 +243,15 @@
 
     <script>
         document.getElementById("togglePassword").addEventListener("click", function () {
-            const password = document.getElementById("PasswordHash");
+            const password = document.getElementById("NewPassword");
             const icon = this.querySelector("i");
 
             if (password.type === "password") {
                 password.type = "text";
-                icon.classList.remove("bi-eye");
-                icon.classList.add("bi-eye-slash");
+                icon.classList.replace("bi-eye", "bi-eye-slash");
             } else {
                 password.type = "password";
-                icon.classList.remove("bi-eye-slash");
-                icon.classList.add("bi-eye");
+                icon.classList.replace("bi-eye-slash", "bi-eye");
             }
         });
     </script>

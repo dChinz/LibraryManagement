@@ -9,7 +9,6 @@ namespace Library.Models
         [Required]
         public string Username { get; set; }
 
-        [Required]
         public string PasswordHash { get; set; }
 
         [Required]

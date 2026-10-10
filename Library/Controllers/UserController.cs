@@ -83,40 +83,67 @@ public class UserController : Controller
         return View(user);
     }
 
+
     // POST: USERS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Username,PasswordHash,FullName,Email,Role,IsActive,CreatedAt,UpdatedAt")] User user)
+    public async Task<IActionResult> Edit(int id, User user, string? newPassword)
     {
         if (id != user.Id)
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
+        var existingUser = await _context.Users.FindAsync(id);
+
+        if (existingUser == null)
         {
-            try
-            {
-                _context.Update(user);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(user.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
-        return View(user);
+
+        // PasswordHash không được gửi từ form Edit.
+        // Xóa lỗi validation của thuộc tính này nếu đang để trống.
+        ModelState.Remove(nameof(Library.Models.User.PasswordHash));
+
+        // Kiểm tra mật khẩu mới nếu người dùng có nhập
+        if (!string.IsNullOrWhiteSpace(newPassword))
+        {
+            if (newPassword.Length < 6)
+            {
+                ModelState.AddModelError(
+                    "newPassword",
+                    "Mật khẩu mới phải có ít nhất 6 ký tự."
+                );
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(user);
+        }
+
+        // Cập nhật thông tin, giữ nguyên mật khẩu cũ nếu không đổi
+        existingUser.Username = user.Username;
+        existingUser.FullName = user.FullName;
+        existingUser.Email = user.Email;
+        existingUser.Role = user.Role;
+        existingUser.IsActive = user.IsActive;
+        existingUser.UpdatedAt = DateTime.Now;
+
+        // Chỉ mã hóa và lưu khi có mật khẩu mới
+        if (!string.IsNullOrWhiteSpace(newPassword))
+        {
+            existingUser.PasswordHash =
+                BCrypt.Net.BCrypt.HashPassword(newPassword);
+        }
+
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = "Cập nhật tài khoản thành công!";
+
+        return RedirectToAction(nameof(Index));
     }
+
 
     // GET: USERS/Delete/5
     public async Task<IActionResult> Delete(int? id)
